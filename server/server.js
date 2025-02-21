@@ -12,10 +12,10 @@ const server = createServer(app);
 app.use(cors());
 
 const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-    },
+  cors: {
+    origin: "*", // Allow all devices on the network to connect
+    methods: ["GET", "POST"],
+  },
 });
 
 let totalAmount = 0;
@@ -23,56 +23,64 @@ let players = [];
 let currentTurn = 0;
 
 io.on("connection", (socket) => {
-    console.log(`Client connected: ${socket.id}`);
+  console.log(`Client connected: ${socket.id}`);
 
-    socket.on("joinGame", (playerId, playerName) => {
-        if (!players.some((p) => p.id === playerId)) {
-            players.push({ id: playerId, name: playerName });
-            console.log(`${playerName} joined the game`);
-        }
+  socket.on("joinGame", (playerId, playerName) => {
+    if (!players.some((p) => p.id === playerId)) {
+      players.push({ id: playerId, name: playerName });
+      console.log(`${playerName} joined the game`);
+    }
 
-        socket.emit("gameState", {
-            totalAmount,
-            players,
-            currentTurn: players[currentTurn]?.id || null,
-        });
-
-        io.emit("playerListUpdate", players);
+    socket.emit("gameState", {
+      totalAmount,
+      players,
+      currentTurn: players[currentTurn]?.id || null,
     });
 
-    socket.on("rollDice", (playerId, operation) => {
-        if (players[currentTurn]?.id !== playerId) {
-            socket.emit("notYourTurn");
-            return;
-        }
+    io.emit("playerListUpdate", players);
+  });
 
-        const diceRoll = Math.floor(Math.random() * 6) + 1;
-        totalAmount += operation === "add" ? diceRoll : -diceRoll;
+  socket.on("rollDice", (playerId, operation) => {
+    if (players[currentTurn]?.id !== playerId) {
+      socket.emit("notYourTurn");
+      return;
+    }
 
-        io.emit("diceRolled", { player: players[currentTurn].name, roll: diceRoll, operation });
-        io.emit("totalUpdate", totalAmount);
+    const diceRoll = Math.floor(Math.random() * 6) + 1;
+    totalAmount += operation === "add" ? diceRoll : -diceRoll;
 
-        currentTurn = (currentTurn + 1) % players.length;
-        io.emit("turnUpdate", players[currentTurn]?.id || null);
+    io.emit("diceRolled", {
+      player: players[currentTurn].name,
+      roll: diceRoll,
+      operation,
     });
+    io.emit("totalUpdate", totalAmount);
 
-    socket.on("leaveGame", (playerId) => {
-        players = players.filter((p) => p.id !== playerId);
-        console.log(`Player left: ${playerId}`);
+    currentTurn = (currentTurn + 1) % players.length;
+    io.emit("turnUpdate", players[currentTurn]?.id || null);
+  });
 
-        if (players.length > 0) {
-            currentTurn = currentTurn % players.length;
-            io.emit("turnUpdate", players[currentTurn]?.id || null);
-        }
+  socket.on("leaveGame", (playerId) => {
+    players = players.filter((p) => p.id !== playerId);
+    console.log(`Player left: ${playerId}`);
 
-        io.emit("playerListUpdate", players);
-    });
+    if (players.length > 0) {
+      currentTurn = currentTurn % players.length;
+      io.emit("turnUpdate", players[currentTurn]?.id || null);
+    }
 
-    socket.on("disconnect", () => {
-        console.log(`Client disconnected: ${socket.id}`);
-    });
+    io.emit("playerListUpdate", players);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Client disconnected: ${socket.id}`);
+  });
 });
 
-server.listen(4000, () => {
-    console.log("Game server running on port 4000");
+// Get the local network IP
+const PORT = 3000; // Use 4000 for backend, since 5173 is for Vite
+const HOST = "0.0.0.0"; // Allow all network devices to connect
+
+server.listen(PORT, HOST, () => {
+  console.log(`Game server running on http://${HOST}:${PORT}`);
 });
