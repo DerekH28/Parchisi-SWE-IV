@@ -7,7 +7,7 @@ if (!storedPlayerId) {
   localStorage.setItem("playerId", storedPlayerId);
 }
 
-const socket = io("http://10.69.86.207:3000", {
+const socket = io("http://localhost:4000", {
   transports: ["websocket"],
 });
 

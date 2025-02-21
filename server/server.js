@@ -13,7 +13,7 @@ app.use(cors());
 
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all devices on the network to connect
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
@@ -77,10 +77,6 @@ io.on("connection", (socket) => {
   });
 });
 
-// Get the local network IP
-const PORT = 3000; // Use 4000 for backend, since 5173 is for Vite
-const HOST = "0.0.0.0"; // Allow all network devices to connect
-
-server.listen(PORT, HOST, () => {
-  console.log(`Game server running on http://${HOST}:${PORT}`);
+server.listen(4000, () => {
+  console.log("Game server running on port 4000");
 });
