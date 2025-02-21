@@ -5,10 +5,14 @@ const DiceRoller = () => {
   const [total, setTotal] = useState(0);
   const [diceRolls, setDiceRolls] = useState([]);
   const [rolling, setRolling] = useState(false);
-  const [playerName, setPlayerName] = useState(localStorage.getItem("playerName") || "");
+  const [playerName, setPlayerName] = useState(
+    localStorage.getItem("playerName") || ""
+  );
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [players, setPlayers] = useState([]);
-  const [hasJoined, setHasJoined] = useState(!!localStorage.getItem("playerName"));
+  const [hasJoined, setHasJoined] = useState(
+    !!localStorage.getItem("playerName")
+  );
 
   useEffect(() => {
     socket.on("gameState", (data) => {
@@ -101,22 +105,37 @@ const DiceRoller = () => {
             {currentPlayer
               ? currentPlayer === storedPlayerId
                 ? "Your Turn!"
-                : `Waiting for ${players.find((p) => p.id === currentPlayer)?.name || "Unknown"}`
+                : `Waiting for ${
+                    players.find((p) => p.id === currentPlayer)?.name ||
+                    "Unknown"
+                  }`
               : "Waiting for players..."}
           </h3>
 
-          <button onClick={() => rollDice("add")} disabled={rolling || storedPlayerId !== currentPlayer}>
+          <button
+            onClick={() => rollDice("add")}
+            disabled={rolling || storedPlayerId !== currentPlayer}
+          >
             {rolling ? "Rolling..." : "Roll & Add"}
           </button>
-          <button onClick={() => rollDice("subtract")} disabled={rolling || storedPlayerId !== currentPlayer}>
+          <button
+            onClick={() => rollDice("subtract")}
+            disabled={rolling || storedPlayerId !== currentPlayer}
+          >
             {rolling ? "Rolling..." : "Roll & Subtract"}
           </button>
 
           <h3>Players in Game</h3>
           <ul>
             {players.map((player, index) => (
-              <li key={index} style={{ fontWeight: player.id === currentPlayer ? "bold" : "normal" }}>
-                {player.name} {player.id === currentPlayer ? "(Current Turn)" : ""}
+              <li
+                key={index}
+                style={{
+                  fontWeight: player.id === currentPlayer ? "bold" : "normal",
+                }}
+              >
+                {player.name}{" "}
+                {player.id === currentPlayer ? "(Current Turn)" : ""}
               </li>
             ))}
           </ul>
@@ -125,12 +144,20 @@ const DiceRoller = () => {
           <ul>
             {diceRolls.slice(-5).map((roll, index) => (
               <li key={index}>
-                {roll.player} rolled a {rolling ? "🎲" : roll.roll} ({roll.operation})
+                {roll.player} rolled a {rolling ? "🎲" : roll.roll} (
+                {roll.operation})
               </li>
             ))}
           </ul>
 
-          <button onClick={handleLogout} style={{ marginTop: "20px", color: "white", backgroundColor: "red" }}>
+          <button
+            onClick={handleLogout}
+            style={{
+              marginTop: "20px",
+              color: "white",
+              backgroundColor: "red",
+            }}
+          >
             Log Out
           </button>
         </>
