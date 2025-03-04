@@ -50,17 +50,30 @@ function Login() {
                             onChange={(e) => setUserPassword(e.target.value)}
                             required/>
                         </div>
-                        <button type="submit" className="sign-in-btn" >Sign In</button>
+                        <SubmitButton 
+                            type="submit"
+                            label="Sign In"
+                            onClick={handleLogin} 
+                            className="sign-in-btn"
+                        />
                     </form>
                     <p className="forgot-password">
-                        <button onClick={() => navigate("/forgot-password")}>Forgot password?</button> {/* fix later */}
+                    <SubmitButton 
+                            onClick={() => navigate("/forgot-password")}
+                            label="Forgot password?"
+                            className="forgot-password-btn"
+                        />
                     </p>
                 </div>
 
                 <div className="sign-up-box">
                     <h3>Welcome to Login</h3>
                     <p>Don&apos;t have an account?</p>
-                    <button onClick={handleSignUp} className="sign-up-btn">Sign Up</button>
+                    <SubmitButton 
+                        onClick={handleSignUp} 
+                        label="Sign Up"
+                        className="sign-up-btn"
+                    />
                 </div>
             </div>
         </div>
