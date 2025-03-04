@@ -1,13 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SubmitButton = ({
-  label,
-  onClick,
-  disabled = false,
-  type = 'button',
-  className = ''
-}) => {
+const SubmitButton = ({label,onClick,disabled = false,type = 'button',className = ''}) => {
   return (
     <button
       type={type}
