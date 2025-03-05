@@ -1,29 +1,41 @@
 import { useState } from "react";
+import { handleDieSelect, resetDiceSelection } from "../util/diceLogic";
+import {
+  handlePieceHover,
+  handlePieceLeave,
+  handlePieceClick,
+} from "../util/pieceLogic";
 
 /**
  * Custom hook for handling game logic, including dice selection, piece movement, and hover effects.
- * @param {Object} socket - The socket instance for emitting events.
+ * Manages UI interactions for dice selection, piece hover effects, and piece movement.
+ *
+ * @param {Object} socket - The socket instance for emitting game-related events.
+ * @returns {Object} - Object containing game state and handler functions.
  */
 const useGameLogic = (socket) => {
-  const [selectedDice, setSelectedDice] = useState([]); // Supports multiple selections
-  const [hoveredPiece, setHoveredPiece] = useState(null);
-  const [highlightedCells, setHighlightedCells] = useState([]);
+  const [selectedDice, setSelectedDice] = useState([]); // Array of selected dice indices
+  const [hoveredPiece, setHoveredPiece] = useState(null); // Currently hovered piece
+  const [highlightedCells, setHighlightedCells] = useState([]); // Highlighted board cells for movement preview
 
   /**
-   * Handles selecting and deselecting a die by its unique index.
+   * Wrapper for handling die selection, ensuring the state is updated correctly.
+   * @param {number} dieIndex - Index of the die being selected/deselected.
    */
-  const handleDieSelect = (dieIndex) => {
-    setSelectedDice((prev) =>
-      prev.includes(dieIndex)
-        ? prev.filter((id) => id !== dieIndex)
-        : [...prev, dieIndex]
-    );
+  const handleDieSelectWrapper = (dieIndex) => {
+    handleDieSelect(dieIndex, selectedDice, setSelectedDice);
   };
 
   /**
-   * Handles hover effect on a piece, using the sum of selected dice values.
+   * Wrapper for handling piece hover, calculating movement preview based on selected dice.
+   * @param {string} pieceId - Unique identifier for the piece.
+   * @param {Object} piecePos - Current position of the piece (row, col).
+   * @param {Object} routes - Object containing movement paths for each player.
+   * @param {string} player - The current player.
+   * @param {number} lastKnownIndex - The last known index of the piece in its movement path.
+   * @param {number[]} diceValues - Array of rolled dice values.
    */
-  const handlePieceHover = (
+  const handlePieceHoverWrapper = (
     pieceId,
     piecePos,
     routes,
@@ -31,103 +43,72 @@ const useGameLogic = (socket) => {
     lastKnownIndex,
     diceValues
   ) => {
-    setHoveredPiece(pieceId);
-
-    if (selectedDice.length === 0) {
-      setHighlightedCells([]);
-      return;
-    }
-
-    if (!diceValues || diceValues.length === 0) return;
-
-    const path = routes[player]?.path;
-    if (!path) return;
-
-    // Ensure `lastKnownIndex` is a number, otherwise find piece position in path
-    let currentIndex =
-      typeof lastKnownIndex === "number"
-        ? lastKnownIndex
-        : path.findIndex(
-            (tile) => tile.row === piecePos.row && tile.col === piecePos.col
-          );
-
-    if (typeof currentIndex !== "number" || currentIndex === -1) return;
-
-    // Calculate total move distance based on selected dice
-    const moveDistance = selectedDice.reduce(
-      (sum, index) => sum + (diceValues[index] || 0),
-      0
+    handlePieceHover(
+      pieceId,
+      piecePos,
+      routes,
+      player,
+      lastKnownIndex,
+      diceValues,
+      selectedDice,
+      setHoveredPiece,
+      setHighlightedCells
     );
-
-    if (isNaN(moveDistance) || moveDistance <= 0) return;
-
-    let newIndex = Math.min(currentIndex + moveDistance, path.length - 1);
-    let newTile = path[newIndex];
-
-    if (newTile) setHighlightedCells([newTile]);
-    else setHighlightedCells([]);
   };
 
   /**
-   * Clears the highlighted cells when the hover ends.
+   * Wrapper to clear hover effects when the cursor leaves a piece.
    */
-  const handlePieceLeave = () => {
-    setHoveredPiece(null);
-    setHighlightedCells([]);
+  const handlePieceLeaveWrapper = () => {
+    handlePieceLeave(setHoveredPiece, setHighlightedCells);
   };
 
   /**
-   * Handles when a piece is clicked, sending total move request.
+   * Wrapper for handling piece selection and movement when clicked.
+   * Validates movement and emits the move request to the server.
+   *
+   * @param {string} pieceId - Unique identifier for the piece being moved.
+   * @param {string} player - The player who owns the piece.
+   * @param {string} currentTurn - The player whose turn it is.
+   * @param {Function} setDiceValues - Setter function for updating dice values.
+   * @param {number[]} diceValues - Array of rolled dice values.
    */
-  const handlePieceClick = (
+  const handlePieceClickWrapper = (
     pieceId,
     player,
     currentTurn,
     setDiceValues,
     diceValues
   ) => {
-    if (!player || selectedDice.length === 0 || player !== currentTurn) return;
-    if (!diceValues || diceValues.length === 0) return;
-
-    const moveDistance = selectedDice.reduce(
-      (sum, index) => sum + (diceValues[index] || 0),
-      0
-    );
-
-    if (isNaN(moveDistance) || moveDistance <= 0) return;
-
-    // Send move request to the server
-    socket.emit(
-      "piece-clicked",
-      { pieceId, player, diceValue: moveDistance },
-      (response) => {
-        if (response.success) {
-          setDiceValues((prev) =>
-            prev.filter((_, i) => !selectedDice.includes(i))
-          );
-          setSelectedDice([]); // Clear selected dice after move
-          setHighlightedCells([]); // Clear highlights after moving
-        }
-      }
+    handlePieceClick(
+      pieceId,
+      player,
+      currentTurn,
+      setDiceValues,
+      diceValues,
+      selectedDice,
+      socket,
+      setSelectedDice,
+      setHighlightedCells
     );
   };
 
   /**
-   * Resets dice selection when a new roll happens.
+   * Wrapper to reset the selected dice when a new roll occurs.
    */
-  const resetDiceSelection = () => {
-    setSelectedDice([]);
+  const resetDiceSelectionWrapper = () => {
+    resetDiceSelection(setSelectedDice);
   };
 
   return {
-    handleDieSelect,
-    handlePieceClick,
-    resetDiceSelection,
+    handleDieSelect: handleDieSelectWrapper,
+    handlePieceClick: handlePieceClickWrapper,
+    resetDiceSelection: resetDiceSelectionWrapper,
     selectedDice,
     hoveredPiece,
     setHoveredPiece,
-    handlePieceHover,
-    handlePieceLeave,
+    handlePieceHover: handlePieceHoverWrapper,
+    handlePieceLeave: handlePieceLeaveWrapper,
     highlightedCells,
   };
 };
