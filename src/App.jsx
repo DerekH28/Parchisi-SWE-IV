@@ -1,11 +1,13 @@
-import DiceRoller from "./components/DiceRoller";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import GamePage from "./pages/GamePage";
 
 function App() {
   return (
-    <div>
-      <h1>WebSocket Counter</h1>
-      <DiceRoller />
-    </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/game" element={<GamePage />} />
+    </Routes>
   );
 }
 
