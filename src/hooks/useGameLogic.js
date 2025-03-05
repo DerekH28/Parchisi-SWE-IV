@@ -5,69 +5,67 @@ import { useState } from "react";
  * @param {Object} socket - The socket instance for emitting events.
  */
 const useGameLogic = (socket) => {
-  const [selectedDie, setSelectedDie] = useState(null);
+  const [selectedDice, setSelectedDice] = useState([]); // Supports multiple selections
   const [hoveredPiece, setHoveredPiece] = useState(null);
   const [highlightedCells, setHighlightedCells] = useState([]);
 
   /**
-   * Handles selecting and deselecting a die.
+   * Handles selecting and deselecting a die by its unique index.
    */
-  const handleDieSelect = (dieValue) => {
-    console.log(
-      `🎲 Selecting die: ${dieValue}, Previous selection: ${selectedDie}`
+  const handleDieSelect = (dieIndex) => {
+    setSelectedDice((prev) =>
+      prev.includes(dieIndex)
+        ? prev.filter((id) => id !== dieIndex)
+        : [...prev, dieIndex]
     );
-    setSelectedDie((prev) => (prev === dieValue ? null : dieValue)); // Toggle selection
   };
 
   /**
-   * Handles hover effect on a piece.
-   * Uses lastKnownIndex to ensure accurate movement previews.
+   * Handles hover effect on a piece, using the sum of selected dice values.
    */
   const handlePieceHover = (
     pieceId,
     piecePos,
     routes,
     player,
-    lastKnownIndex
+    lastKnownIndex,
+    diceValues
   ) => {
     setHoveredPiece(pieceId);
 
-    if (!selectedDie) {
-      console.log(`🔍 Hovering over ${pieceId}, but no die selected.`);
+    if (selectedDice.length === 0) {
       setHighlightedCells([]);
       return;
     }
 
-    console.log(`🔍 Hovering over ${pieceId}, checking movement...`);
+    if (!diceValues || diceValues.length === 0) return;
 
     const path = routes[player]?.path;
-    if (!path) {
-      console.error(`❌ No path found for player ${player}`);
-      return;
-    }
+    if (!path) return;
 
-    // ✅ Use lastKnownIndex if available, otherwise find piece position in path
+    // Ensure `lastKnownIndex` is a number, otherwise find piece position in path
     let currentIndex =
-      lastKnownIndex ??
-      path.findIndex(
-        (tile) => tile.row === piecePos.row && tile.col === piecePos.col
-      );
+      typeof lastKnownIndex === "number"
+        ? lastKnownIndex
+        : path.findIndex(
+            (tile) => tile.row === piecePos.row && tile.col === piecePos.col
+          );
 
-    if (currentIndex === -1) {
-      console.error(`❌ ${pieceId} not found in path`);
-      return;
-    }
+    if (typeof currentIndex !== "number" || currentIndex === -1) return;
 
-    let newIndex = currentIndex + selectedDie;
-    newIndex = Math.min(newIndex, path.length - 1); // Ensure it doesn't exceed bounds
+    // Calculate total move distance based on selected dice
+    const moveDistance = selectedDice.reduce(
+      (sum, index) => sum + (diceValues[index] || 0),
+      0
+    );
 
+    if (isNaN(moveDistance) || moveDistance <= 0) return;
+
+    let newIndex = Math.min(currentIndex + moveDistance, path.length - 1);
     let newTile = path[newIndex];
-    if (newTile) {
-      console.log(
-        `✨ Hovering over ${pieceId}: Moving to ${newTile.row}, ${newTile.col}`
-      );
-      setHighlightedCells([newTile]);
-    }
+
+    if (newTile) setHighlightedCells([newTile]);
+    else setHighlightedCells([]);
   };
 
   /**
@@ -79,44 +77,53 @@ const useGameLogic = (socket) => {
   };
 
   /**
-   * Handles when a piece is clicked.
-   * Ensures a die is selected and it's the player's turn before making a move.
+   * Handles when a piece is clicked, sending total move request.
    */
-  const handlePieceClick = (pieceId, player, currentTurn, setDiceValues) => {
-    if (!player) return;
-    if (selectedDie == null) {
-      console.error("❌ You must select a die value first!");
-      return;
-    }
-    if (player !== currentTurn) {
-      console.error("❌ Not your turn!");
-      return;
-    }
+  const handlePieceClick = (
+    pieceId,
+    player,
+    currentTurn,
+    setDiceValues,
+    diceValues
+  ) => {
+    if (!player || selectedDice.length === 0 || player !== currentTurn) return;
+    if (!diceValues || diceValues.length === 0) return;
 
-    console.log(
-      `🔹 Sending piece-clicked for ${pieceId} with selected die ${selectedDie}`
+    const moveDistance = selectedDice.reduce(
+      (sum, index) => sum + (diceValues[index] || 0),
+      0
     );
 
-    // ✅ Send move request to the server (server handles movement logic)
+    if (isNaN(moveDistance) || moveDistance <= 0) return;
+
+    // Send move request to the server
     socket.emit(
       "piece-clicked",
-      { pieceId, player, diceValue: selectedDie },
+      { pieceId, player, diceValue: moveDistance },
       (response) => {
-        if (!response.success) {
-          console.error("❌ Move rejected:", response.message);
-        } else {
-          setDiceValues((prev) => prev.filter((d) => d !== selectedDie));
-          setSelectedDie(null);
+        if (response.success) {
+          setDiceValues((prev) =>
+            prev.filter((_, i) => !selectedDice.includes(i))
+          );
+          setSelectedDice([]); // Clear selected dice after move
           setHighlightedCells([]); // Clear highlights after moving
         }
       }
     );
   };
 
+  /**
+   * Resets dice selection when a new roll happens.
+   */
+  const resetDiceSelection = () => {
+    setSelectedDice([]);
+  };
+
   return {
     handleDieSelect,
     handlePieceClick,
-    selectedDie,
+    resetDiceSelection,
+    selectedDice,
     hoveredPiece,
     setHoveredPiece,
     handlePieceHover,

@@ -43,6 +43,8 @@ const Board = ({
   highlightedCells,
   hoveredPiece,
 }) => {
+  console.log(`🔹 Rendering Board - highlightedCells:`, highlightedCells); // ✅ Debug log
+
   return (
     <div className="overflow-hidden rounded-xl">
       <div className="grid" style={{ gridTemplateColumns: "repeat(15, 40px)" }}>
@@ -59,7 +61,7 @@ const Board = ({
                   cellClasses[cell] || ""
                 } ${
                   isHighlighted
-                    ? "bg-yellow-300 border-2 border-yellow-500" // Highlight move locations
+                    ? "bg-yellow-300 border-2 border-yellow-500" // ✅ Ensure highlight is visible
                     : ""
                 }`}
               >
@@ -78,8 +80,8 @@ const Board = ({
                       return (
                         <div
                           key={pieceId}
-                          className={`w-6 h-6 ${playerColor} rounded-full cursor-pointer border-2 border-black shadow-sm transition-transform ${
-                            isHovered ? "scale-110 ring-1 ring-neutral-800" : ""
+                          className={`w-6 h-6 ${playerColor} rounded-full cursor-pointer border-2 border-black shadow-lg transition-transform ${
+                            isHovered ? "scale-110 ring-2 ring-yellow-500" : ""
                           }`}
                           onClick={() => onPieceClick(pieceId)}
                           onMouseEnter={() => {
@@ -91,7 +93,7 @@ const Board = ({
                               piece.coord,
                               routes,
                               color,
-                              piece.lastKnownIndex // ✅ Pass lastKnownIndex
+                              piece.lastKnownIndex
                             );
                           }}
                           onMouseLeave={handlePieceLeave}

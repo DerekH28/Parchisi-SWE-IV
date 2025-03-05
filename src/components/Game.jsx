@@ -10,11 +10,12 @@ const Game = () => {
   const {
     handleDieSelect,
     handlePieceClick,
-    selectedDie,
-    hoveredPiece, // ✅ Add this
+    selectedDice,
+    hoveredPiece,
     handlePieceHover,
     handlePieceLeave,
     highlightedCells,
+    resetDiceSelection,
   } = useGameLogic(socket);
 
   /**
@@ -32,6 +33,7 @@ const Game = () => {
         console.error("❌ Dice roll failed:", response.message);
       } else {
         setDiceValues(response.dice);
+        resetDiceSelection();
       }
     });
   };
@@ -40,25 +42,42 @@ const Game = () => {
     <div className="flex flex-col items-center">
       <h2 className="mb-4 text-xl font-bold">
         {player
-          ? `You are Player: ${player.toUpperCase()}`
+          ? `You are Player: ${String(player).toUpperCase()}`
           : "Waiting for player assignment..."}
       </h2>
       <p className="mb-2">
         {currentTurn
-          ? `It is ${currentTurn.toUpperCase()}'s turn.`
+          ? `It is ${String(currentTurn).toUpperCase()}'s turn.`
           : "Waiting for turn information..."}
       </p>
+
       <Board
         piecePositions={positions}
-        routes={routes} // ✅ Pass routes down
+        routes={routes}
         onPieceClick={(pieceId) =>
-          handlePieceClick(pieceId, player, currentTurn, setDiceValues)
+          handlePieceClick(
+            pieceId,
+            String(player),
+            currentTurn,
+            setDiceValues,
+            diceValues
+          )
         }
-        handlePieceHover={handlePieceHover}
+        handlePieceHover={(pieceId, piecePos, lastKnownIndex) =>
+          handlePieceHover(
+            pieceId,
+            piecePos,
+            routes,
+            String(player),
+            lastKnownIndex,
+            diceValues
+          )
+        }
         handlePieceLeave={handlePieceLeave}
         highlightedCells={highlightedCells}
         hoveredPiece={hoveredPiece}
       />
+
       <button
         onClick={rollDice}
         className="px-4 py-2 mt-4 text-white bg-blue-500 rounded"
@@ -72,9 +91,9 @@ const Game = () => {
             {diceValues.map((die, index) => (
               <button
                 key={index}
-                onClick={() => handleDieSelect(die)}
+                onClick={() => handleDieSelect(index)}
                 className={`px-3 py-1 border rounded ${
-                  selectedDie === die
+                  selectedDice.includes(index)
                     ? "bg-green-500 text-white"
                     : "bg-gray-200"
                 }`}
@@ -83,6 +102,12 @@ const Game = () => {
               </button>
             ))}
           </div>
+          {selectedDice.length > 0 && (
+            <p className="mt-2">
+              ✅ Selected Move:{" "}
+              {selectedDice.reduce((sum, idx) => sum + diceValues[idx], 0)}
+            </p>
+          )}
         </div>
       )}
     </div>
