@@ -2,12 +2,20 @@ import React from "react";
 import useSocket from "../hooks/useSocket";
 import useGameLogic from "../hooks/useGameLogic";
 import Board from "./Board";
+import { routes } from "../util/routes";
 
 const Game = () => {
   const { socket, player, diceValues, currentTurn, positions, setDiceValues } =
     useSocket();
-  const { handleDieSelect, handlePieceClick, selectedDie } =
-    useGameLogic(socket);
+  const {
+    handleDieSelect,
+    handlePieceClick,
+    selectedDie,
+    hoveredPiece, // ✅ Add this
+    handlePieceHover,
+    handlePieceLeave,
+    highlightedCells,
+  } = useGameLogic(socket);
 
   /**
    * Handles rolling dice, ensuring only the current player can roll.
@@ -42,9 +50,14 @@ const Game = () => {
       </p>
       <Board
         piecePositions={positions}
+        routes={routes} // ✅ Pass routes down
         onPieceClick={(pieceId) =>
           handlePieceClick(pieceId, player, currentTurn, setDiceValues)
         }
+        handlePieceHover={handlePieceHover}
+        handlePieceLeave={handlePieceLeave}
+        highlightedCells={highlightedCells}
+        hoveredPiece={hoveredPiece}
       />
       <button
         onClick={rollDice}
