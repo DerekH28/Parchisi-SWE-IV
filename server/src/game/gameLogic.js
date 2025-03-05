@@ -26,6 +26,8 @@ export const rollDice = (player, currentTurn) => {
 
 /**
  * Moves a piece based on the selected dice value.
+ * Ensures correct progression, prevents resetting, and handles duplicate tiles properly.
+ *
  * @param {string} player - The player making the move.
  * @param {string} pieceId - The piece being moved (e.g., "red1").
  * @param {number} diceValue - The dice value used for movement.
@@ -42,82 +44,57 @@ export const movePiece = (player, pieceId, diceValue) => {
   }
 
   let piece = gameState[player][pieceIndex];
+  const path = routes[player].path;
 
-  // ✅ Rule 1: Home Exit Logic - Must Roll Sum of 5
+  // 🎲 Rule 1: Home Exit Logic - Must roll exactly 5 to leave home
   if (piece.inHome) {
     if (diceValue !== 5) {
       console.log(`🚫 ${pieceId} must roll a sum of 5 to leave home.`);
       return { success: false, message: "Must roll exactly 5 to leave home" };
     }
-    console.log(`🚀 ${pieceId} is leaving home!`);
+    console.log(`🚀 ${pieceId} is leaving home at index 0!`);
     gameState[player][pieceIndex] = {
       ...piece,
-      coord: routes[player][0], // ✅ Start at first board position
+      coord: path[0], // Start at first board position
       inHome: false,
+      lastKnownIndex: 0, // Track correct movement history
     };
     return { success: true };
   }
 
-  // ✅ Find ALL occurrences of the current position in the route
-  let matchingIndices = routes[player]
-    .map((pos, index) =>
-      pos.row === piece.coord.row && pos.col === piece.coord.col ? index : -1
-    )
-    .filter((index) => index !== -1);
-
-  if (matchingIndices.length === 0) {
-    console.warn(`⚠️ ${pieceId} not found in route! Resetting to start.`);
-    gameState[player][pieceIndex] = {
-      ...piece,
-      coord: routes[player][0], // Reset to start
-    };
-    return { success: true };
-  }
-
-  // ✅ Check if the piece is transitioning into the final stretch
-  let currentPosIndex = matchingIndices[0];
-
-  //NOTE: This won't work for all players
-  if (routes[player][currentPosIndex]?.final === 0) {
-    let finalIndex = routes[player].findIndex(
-      (pos, index) =>
-        pos.row === piece.coord.row &&
-        pos.col === piece.coord.col &&
-        pos.final === 1 &&
-        index > currentPosIndex // ✅ Ensure it’s later in the route
+  // 🔍 Find the last known position of the piece
+  let currentIndex =
+    piece.lastKnownIndex ??
+    path.findIndex(
+      (tile) => tile.row === piece.coord.row && tile.col === piece.coord.col
     );
 
-    if (finalIndex !== -1) {
-      console.log(`🏁 ${pieceId} is entering the final stretch!`);
-      currentPosIndex = finalIndex; // ✅ Move to the final stretch
-    }
-  }
-
-  // ✅ Rule 2: Exact Roll Required in Final Stretch
-  let isInFinalStretch = routes[player][currentPosIndex]?.final === 1;
-  let remainingMoves = routes[player].length - 1 - currentPosIndex;
-
-  if (isInFinalStretch && diceValue > remainingMoves) {
-    console.log(`🔄 ${pieceId} rolled too high in final stretch! Turn resets.`);
+  if (currentIndex === -1) {
+    console.warn(
+      `⚠️ ${pieceId} not found in route! Keeping last known position.`
+    );
     return {
       success: false,
-      message: "Rolled too high in final stretch, turn resets",
+      message: "Piece position invalid. Movement blocked.",
     };
   }
 
-  // ✅ Ensure the piece does not move beyond the final position
-  let newIndex = Math.min(
-    currentPosIndex + diceValue,
-    routes[player].length - 1
-  );
+  // ➡️ Move forward based on the dice roll
+  let newIndex = currentIndex + diceValue;
 
-  gameState[player][pieceIndex] = {
-    ...piece,
-    coord: routes[player][newIndex],
-  };
+  // 🛑 Prevent moving beyond the final tile
+  newIndex = Math.min(newIndex, path.length - 1);
 
   console.log(
-    `✅ ${pieceId} moved to ${JSON.stringify(routes[player][newIndex])}`
+    `✅ ${pieceId} moved from index ${currentIndex} to index ${newIndex}`
   );
+
+  // ✅ Update game state to reflect the new position
+  gameState[player][pieceIndex] = {
+    ...piece,
+    coord: path[newIndex], // Always update to the correct row & col
+    lastKnownIndex: newIndex, // Store last known index to prevent resetting
+  };
+
   return { success: true };
 };

@@ -34,46 +34,76 @@ const playerColors = {
 /**
  * Renders the game board with pieces placed on the grid.
  */
-const Board = ({ piecePositions = {}, onPieceClick }) => {
-  console.log("🔹 Board received piecePositions:", piecePositions);
-
+const Board = ({
+  piecePositions,
+  routes,
+  onPieceClick,
+  handlePieceHover,
+  handlePieceLeave,
+  highlightedCells,
+  hoveredPiece,
+}) => {
   return (
     <div className="overflow-hidden rounded-xl">
       <div className="grid" style={{ gridTemplateColumns: "repeat(15, 40px)" }}>
         {boardLayout.map((row, rowIndex) =>
-          row.map((cell, colIndex) => (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              className={`w-10 h-10 flex items-center justify-center ${
-                cellClasses[cell] || ""
-              }`}
-            >
-              {Object.entries(piecePositions).map(([color, pieces]) => {
-                if (!Array.isArray(pieces)) return null; // Ensure `pieces` is an array
+          row.map((cell, colIndex) => {
+            const isHighlighted = highlightedCells.some(
+              (pos) => pos.row === rowIndex && pos.col === colIndex
+            );
 
-                return pieces.map((piece, index) => {
-                  if (!piece || !piece.coord) return null; // Guard against undefined values
+            return (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                className={`w-10 h-10 flex items-center justify-center ${
+                  cellClasses[cell] || ""
+                } ${
+                  isHighlighted
+                    ? "bg-yellow-300 border-2 border-yellow-500" // Highlight move locations
+                    : ""
+                }`}
+              >
+                {Object.entries(piecePositions).map(([color, pieces]) =>
+                  pieces.map((piece, index) => {
+                    if (!piece || !piece.coord) return null;
 
-                  const pieceId = `${color}${index + 1}`; // ✅ Define pieceId properly
-                  const playerColor = playerColors[color] || "bg-gray-700"; // ✅ Map colors properly
+                    const pieceId = `${color}${index + 1}`;
+                    const playerColor = playerColors[color] || "bg-gray-700";
+                    const isHovered = hoveredPiece === pieceId;
 
-                  if (
-                    rowIndex === piece.coord.row &&
-                    colIndex === piece.coord.col
-                  ) {
-                    return (
-                      <div
-                        key={pieceId}
-                        className={`w-6 h-6 ${playerColor} rounded-full cursor-pointer border-2 border-black shadow-lg`}
-                        onClick={() => onPieceClick(pieceId)}
-                      />
-                    );
-                  }
-                  return null;
-                });
-              })}
-            </div>
-          ))
+                    if (
+                      rowIndex === piece.coord.row &&
+                      colIndex === piece.coord.col
+                    ) {
+                      return (
+                        <div
+                          key={pieceId}
+                          className={`w-6 h-6 ${playerColor} rounded-full cursor-pointer border-2 border-black shadow-sm transition-transform ${
+                            isHovered ? "scale-110 ring-1 ring-neutral-800" : ""
+                          }`}
+                          onClick={() => onPieceClick(pieceId)}
+                          onMouseEnter={() => {
+                            console.log(
+                              `✅ onMouseEnter fired for piece: ${pieceId}`
+                            );
+                            handlePieceHover(
+                              pieceId,
+                              piece.coord,
+                              routes,
+                              color,
+                              piece.lastKnownIndex // ✅ Pass lastKnownIndex
+                            );
+                          }}
+                          onMouseLeave={handlePieceLeave}
+                        />
+                      );
+                    }
+                    return null;
+                  })
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
