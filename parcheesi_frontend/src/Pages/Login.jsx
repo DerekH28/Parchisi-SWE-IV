@@ -20,8 +20,14 @@ function Login() {
     });
     if (error) {
       console.error('Error signing in:', error.message);
-      setErrorMsg(error.message);
-    } else {
+      if (error.message.toLowerCase().includes("invalid")) {
+        setErrorMsg("Incorrect email or password.");
+      } 
+      else {
+        setErrorMsg("Error signing in with email.");
+    } 
+  }
+      else {
       setErrorMsg('');
       // On successful login, navigate to the Menu page
       navigate('/Menu');
@@ -34,8 +40,8 @@ function Login() {
       provider: 'google',
     });
     if (error) {
-      console.error('Error signing in with Google:', error.message);
-      setErrorMsg(error.message);
+      console.error('Google login error:', error.message);
+      setErrorMsg("Error signing in with Google.");
     } else {
       setErrorMsg('');
       navigate('/Menu');
