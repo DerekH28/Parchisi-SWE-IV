@@ -26,21 +26,11 @@ function App() {
         setUserPassword={setUserPassword}
         />
       }/>
-      <Route path="/" element={
-        <Menu 
-
-
-        />
-      }/>
-      <Route path="/" element={
-        <SignUp
-        
-
-
-        />
-      }/>
+      <Route path="/menu" element={<Menu />} />
+      <Route path="/signup" element={<SignUp />} />
     </Routes>
   </Router>
+  
   );
 }
 
