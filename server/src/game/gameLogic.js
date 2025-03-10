@@ -1,6 +1,7 @@
 import { gameState } from "../utils/gameState.js";
 import { routes } from "../utils/routes.js";
 
+//BUG: User should be able to move until they don't have any dice remaining, but currently they can only move once.
 //TODO: Final Stretch Needs to be exactly to home or it skips players turn.
 //TODO: No Multiple Dice Rolls
 //TODO: Should check, if the user has any possible moves before allowing them to make a move.
