@@ -1,12 +1,22 @@
-import DiceRoller from "./components/DiceRoller";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import GamePage from "./pages/GamePage";
+import { AuthProvider } from "./context/AuthProvider";
+import SignUp from "./pages/SignUp";
 
-function App() {
+const App = () => {
   return (
-    <div>
-      <h1>WebSocket Counter</h1>
-      <DiceRoller />
-    </div>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/game" element={<GamePage />} />
+      </Routes>
+    </AuthProvider>
   );
-}
+};
 
 export default App;
