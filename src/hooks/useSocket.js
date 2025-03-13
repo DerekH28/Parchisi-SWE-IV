@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
+// TODO: Set up lobbies and a lobby screen
 
 const socket = io("http://localhost:4000", { transports: ["websocket"] });
 
