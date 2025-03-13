@@ -43,7 +43,12 @@ const Board = ({
   highlightedCells,
   hoveredPiece,
 }) => {
-  console.log(`🔹 Rendering Board - highlightedCells:`, highlightedCells); // ✅ Debug log
+  console.log("🔹 Rendering Board - highlightedCells:", highlightedCells);
+
+  // Filter out keys in piecePositions that are not arrays (e.g., dice, currentTurn)
+  const pieceKeys = Object.keys(piecePositions).filter((key) =>
+    Array.isArray(piecePositions[key])
+  );
 
   return (
     <div className="overflow-hidden rounded-xl">
@@ -61,12 +66,12 @@ const Board = ({
                   cellClasses[cell] || ""
                 } ${
                   isHighlighted
-                    ? "bg-yellow-300 border-2 border-yellow-500" // ✅ Ensure highlight is visible
+                    ? "bg-yellow-300 border-2 border-yellow-500"
                     : ""
                 }`}
               >
-                {Object.entries(piecePositions).map(([color, pieces]) =>
-                  pieces.map((piece, index) => {
+                {pieceKeys.map((color) =>
+                  piecePositions[color].map((piece, index) => {
                     if (!piece || !piece.coord) return null;
 
                     const pieceId = `${color}${index + 1}`;

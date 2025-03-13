@@ -19,7 +19,7 @@ const useGameLogic = (socket) => {
   const [highlightedCells, setHighlightedCells] = useState([]); // Highlighted board cells for movement preview
 
   /**
-   * Wrapper for handling die selection, ensuring the state is updated correctly.
+   * Wrapper for handling die selection.
    * @param {number} dieIndex - Index of the die being selected/deselected.
    */
   const handleDieSelectWrapper = (dieIndex) => {
@@ -28,12 +28,6 @@ const useGameLogic = (socket) => {
 
   /**
    * Wrapper for handling piece hover, calculating movement preview based on selected dice.
-   * @param {string} pieceId - Unique identifier for the piece.
-   * @param {Object} piecePos - Current position of the piece (row, col).
-   * @param {Object} routes - Object containing movement paths for each player.
-   * @param {string} player - The current player.
-   * @param {number} lastKnownIndex - The last known index of the piece in its movement path.
-   * @param {number[]} diceValues - Array of rolled dice values.
    */
   const handlePieceHoverWrapper = (
     pieceId,
@@ -57,21 +51,15 @@ const useGameLogic = (socket) => {
   };
 
   /**
-   * Wrapper to clear hover effects when the cursor leaves a piece.
+   * Clears hover effects.
    */
   const handlePieceLeaveWrapper = () => {
     handlePieceLeave(setHoveredPiece, setHighlightedCells);
   };
 
   /**
-   * Wrapper for handling piece selection and movement when clicked.
-   * Validates movement and emits the move request to the server.
-   *
-   * @param {string} pieceId - Unique identifier for the piece being moved.
-   * @param {string} player - The player who owns the piece.
-   * @param {string} currentTurn - The player whose turn it is.
-   * @param {Function} setDiceValues - Setter function for updating dice values.
-   * @param {number[]} diceValues - Array of rolled dice values.
+   * Wrapper for handling piece click.
+   * Sends the move request to the server using the sum of selected dice values.
    */
   const handlePieceClickWrapper = (
     pieceId,
@@ -94,7 +82,7 @@ const useGameLogic = (socket) => {
   };
 
   /**
-   * Wrapper to reset the selected dice when a new roll occurs.
+   * Resets the selected dice when a new roll occurs.
    */
   const resetDiceSelectionWrapper = () => {
     resetDiceSelection(setSelectedDice);

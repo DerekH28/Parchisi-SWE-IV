@@ -10,9 +10,12 @@ export const handleGameEvents = (io) => {
   io.on("connection", (socket) => {
     console.log("🔹 A player connected:", socket.id);
 
-    // Assign a color to the player if one is available.
+    // Use an explicit array of valid player colors.
+    const allColors = ["red", "blue", "yellow", "green"];
     const connectedSockets = Array.from(io.sockets.sockets.values());
-    const availableColors = Object.keys(gameState).filter(
+
+    // Determine available colors by filtering out colors already assigned.
+    const availableColors = allColors.filter(
       (color) => !connectedSockets.some((s) => s.data?.color === color)
     );
 
@@ -22,6 +25,7 @@ export const handleGameEvents = (io) => {
       console.log(`🔹 Assigned player ${socket.data.color}`);
     } else {
       socket.emit("player-assigned", null);
+      console.log("🔹 No available player colors to assign");
     }
 
     // Send the current game state and turn information to the player.
@@ -36,30 +40,64 @@ export const handleGameEvents = (io) => {
       const result = rollDice(player, currentTurn);
       if (!result.success) return callback(result);
 
+      // Update the gameState dice values and reset played flags.
+      gameState.dice.die1.value = result.dice[0];
+      gameState.dice.die2.value = result.dice[1];
+      gameState.dice.die1.played = false;
+      gameState.dice.die2.played = false;
+
       io.emit("dice-rolled", { player, dice: result.dice });
       callback(result);
     });
 
     /**
      * Handles piece movement when a player selects a die.
-     * Validates move, updates game state, and advances the turn.
+     * Validates move, updates game state, and advances the turn if both dice have been used.
      */
     socket.on("piece-clicked", ({ pieceId, player, diceValue }, callback) => {
       const moveResult = movePiece(player, pieceId, diceValue);
       if (!moveResult.success) return callback(moveResult);
 
+      // Mark the appropriate die as played based on the diceValue.
+      if (
+        gameState.dice.die1.value === diceValue &&
+        !gameState.dice.die1.played
+      ) {
+        gameState.dice.die1.played = true;
+      } else if (
+        gameState.dice.die2.value === diceValue &&
+        !gameState.dice.die2.played
+      ) {
+        gameState.dice.die2.played = true;
+      } else {
+        // If dice values are equal or don't match specifically, mark the first unplayed die.
+        if (!gameState.dice.die1.played) {
+          gameState.dice.die1.played = true;
+        } else if (!gameState.dice.die2.played) {
+          gameState.dice.die2.played = true;
+        }
+      }
+
       io.emit("game-state-updated", JSON.parse(JSON.stringify(gameState)));
 
-      // Advance to the next player's turn.
-      const nextTurn = getNextTurn(io, currentTurn);
-      io.emit("turn-changed", nextTurn);
+      // Check if both dice have been played. If so, switch turn and reset dice.
+      if (gameState.dice.die1.played && gameState.dice.die2.played) {
+        const nextTurn = getNextTurn(io, currentTurn);
+
+        // Reset dice values and flags.
+        gameState.dice.die1.value = null;
+        gameState.dice.die2.value = null;
+        gameState.dice.die1.played = false;
+        gameState.dice.die2.played = false;
+
+        io.emit("turn-changed", nextTurn);
+      }
 
       callback({ success: true, newPositions: gameState });
     });
 
     /**
      * Handles player disconnection.
-     * Logs the event and keeps the game running.
      */
     socket.on("disconnect", () => {
       console.log("🔹 A player disconnected:", socket.id);

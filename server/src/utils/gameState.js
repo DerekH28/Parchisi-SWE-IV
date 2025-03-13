@@ -1,4 +1,10 @@
+// In your game state file (e.g., gameState.js), ensure the dice state is included:
 export const initialGameState = {
+  currentTurn: "red", // this is now redundant if using turnManager.currentTurn
+  dice: {
+    die1: { value: null, played: false },
+    die2: { value: null, played: false },
+  },
   red: [
     { inHome: true, index: 0, coord: { row: 2, col: 2 }, traveledTiles: [] },
     { inHome: true, index: 1, coord: { row: 2, col: 3 }, traveledTiles: [] },

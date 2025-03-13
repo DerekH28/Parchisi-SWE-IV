@@ -28,6 +28,7 @@ const useSocket = () => {
 
     socket.on("dice-rolled", ({ player: rolledBy, dice }) => {
       console.log(`🎲 ${rolledBy} rolled: ${dice[0]} and ${dice[1]}`);
+      // Only update dice values if the roll was by the current client.
       if (rolledBy === player) {
         setDiceValues(dice);
       }
@@ -36,6 +37,8 @@ const useSocket = () => {
     socket.on("turn-changed", (turn) => {
       console.log(`🔹 Turn changed: It is now ${turn}'s turn.`);
       setCurrentTurn(turn);
+      // Clear dice values when the turn changes.
+      setDiceValues([]);
     });
 
     return () => {
