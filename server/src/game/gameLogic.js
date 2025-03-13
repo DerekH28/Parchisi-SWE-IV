@@ -2,8 +2,6 @@ import { gameState } from "../utils/gameState.js";
 import { routes } from "../utils/routes.js";
 
 //TODO: Final Stretch Needs to be exactly to home or it skips players turn.
-//TODO: No Multiple Dice Rolls
-//TODO: Should check, if the user has any possible moves before allowing them to make a move.
 
 /**
  * Rolls two dice for the current player if it's their turn.
