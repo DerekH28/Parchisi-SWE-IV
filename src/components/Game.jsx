@@ -80,7 +80,9 @@ const Game = () => {
 
       <button
         onClick={rollDice}
-        className="px-4 py-2 mt-4 text-white bg-blue-500 rounded"
+        className={`px-4 py-2 mt-4 text-white rounded ${
+          player === currentTurn ? "bg-blue-500" : "bg-gray-500"
+        }`}
       >
         Roll Dice
       </button>

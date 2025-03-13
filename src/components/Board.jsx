@@ -9,16 +9,13 @@ const cellClasses = {
   "blue-home": "bg-blue-400",
   "yellow-home": "bg-yellow-400",
   "green-home": "bg-green-400",
-  "track-top": "bg-white border border-gray-300",
-  "track-bottom": "bg-white border border-gray-300",
-  "track-left": "bg-white border border-gray-300",
-  "track-right": "bg-white border border-gray-300",
   center: "bg-gray-100",
+  track: "bg-white border border-gray-300",
+  "slot-blue": "bg-blue-400 border border-blue-500",
+  "slot-yellow": "bg-yellow-400 border border-yellow-500",
+  "slot-red": "bg-red-400 border border-red-500",
+  "slot-green": "bg-green-400 border border-green-500",
   unused: "bg-gray-100",
-  "track-blue-slot": "bg-blue-400 border border-blue-500",
-  "track-yellow-slot": "bg-yellow-400 border border-yellow-500",
-  "track-red-slot": "bg-red-400 border border-red-500",
-  "track-green-slot": "bg-green-400 border border-green-500",
 };
 
 /**
@@ -64,11 +61,7 @@ const Board = ({
                 key={`${rowIndex}-${colIndex}`}
                 className={`w-10 h-10 flex items-center justify-center ${
                   cellClasses[cell] || ""
-                } ${
-                  isHighlighted
-                    ? "bg-yellow-300 border-2 border-yellow-500"
-                    : ""
-                }`}
+                } ${isHighlighted ? "bg-yellow-300 border-2 border-yellow-500" : ""}`}
               >
                 {pieceKeys.map((color) =>
                   piecePositions[color].map((piece, index) => {
