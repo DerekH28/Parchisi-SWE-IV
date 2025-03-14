@@ -1,5 +1,6 @@
 import React from "react";
 import { boardLayout } from "../models/boardLayout";
+//TODO: Player should only be able to hover over there player pieces
 
 /**
  * Defines CSS classes for each board cell type.

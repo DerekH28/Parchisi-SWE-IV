@@ -43,7 +43,7 @@ export const boardLayout = (() => {
   // Mark "slot-blue" when c is 7 and not in the very first row.
   for (let r = 0; r < 6; r++) {
     for (let c = 6; c <= 8; c++) {
-      board[r][c] = c === 7 && r !== 0 ? "slot-blue" : "track";
+      board[r][c] = c === 7 && r !== 0 ? "slot-red" : "track";
     }
   }
 
@@ -51,7 +51,7 @@ export const boardLayout = (() => {
   // Mark "slot-yellow" when c is 7 and not in the last row.
   for (let r = 9; r < size; r++) {
     for (let c = 6; c <= 8; c++) {
-      board[r][c] = c === 7 && r !== size - 1 ? "slot-yellow" : "track";
+      board[r][c] = c === 7 && r !== size - 1 ? "slot-green" : "track";
     }
   }
 
@@ -59,7 +59,7 @@ export const boardLayout = (() => {
   // Mark "slot-red" when r is 7 and not in the first column.
   for (let r = 6; r <= 8; r++) {
     for (let c = 0; c < 6; c++) {
-      board[r][c] = r === 7 && c !== 0 ? "slot-red" : "track";
+      board[r][c] = r === 7 && c !== 0 ? "slot-yellow" : "track";
     }
   }
 
@@ -67,7 +67,7 @@ export const boardLayout = (() => {
   // Mark "slot-green" when r is 7 and not in the last column.
   for (let r = 6; r <= 8; r++) {
     for (let c = 9; c < size; c++) {
-      board[r][c] = r === 7 && c !== size - 1 ? "slot-green" : "track";
+      board[r][c] = r === 7 && c !== size - 1 ? "slot-blue" : "track";
     }
   }
 
