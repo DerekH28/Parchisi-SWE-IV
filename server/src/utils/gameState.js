@@ -12,16 +12,22 @@ export const initialGameState = {
     { inHome: true, index: 3, coord: { row: 3, col: 3 }, traveledTiles: [] },
   ],
   blue: [
-    { inHome: true, index: 0, coord: { row: 1, col: 12 }, traveledTiles: [] },
-    { inHome: true, index: 1, coord: { row: 1, col: 13 }, traveledTiles: [] },
+    { inHome: true, index: 0, coord: { row: 2, col: 11 }, traveledTiles: [] },
+    { inHome: true, index: 1, coord: { row: 2, col: 12 }, traveledTiles: [] },
+    { inHome: true, index: 2, coord: { row: 3, col: 11 }, traveledTiles: [] },
+    { inHome: true, index: 3, coord: { row: 3, col: 12 }, traveledTiles: [] },
   ],
   yellow: [
-    { inHome: true, index: 0, coord: { row: 12, col: 1 }, traveledTiles: [] },
-    { inHome: true, index: 1, coord: { row: 12, col: 2 }, traveledTiles: [] },
+    { inHome: true, index: 0, coord: { row: 11, col: 2 }, traveledTiles: [] },
+    { inHome: true, index: 1, coord: { row: 11, col: 3 }, traveledTiles: [] },
+    { inHome: true, index: 2, coord: { row: 12, col: 2 }, traveledTiles: [] },
+    { inHome: true, index: 3, coord: { row: 12, col: 3 }, traveledTiles: [] },
   ],
   green: [
-    { inHome: true, index: 0, coord: { row: 12, col: 12 }, traveledTiles: [] },
-    { inHome: true, index: 1, coord: { row: 12, col: 13 }, traveledTiles: [] },
+    { inHome: true, index: 0, coord: { row: 11, col: 11 }, traveledTiles: [] },
+    { inHome: true, index: 1, coord: { row: 11, col: 12 }, traveledTiles: [] },
+    { inHome: true, index: 0, coord: { row: 12, col: 11 }, traveledTiles: [] },
+    { inHome: true, index: 1, coord: { row: 12, col: 12 }, traveledTiles: [] },
   ],
 };
 
