@@ -76,6 +76,7 @@ const Game = () => {
         handlePieceLeave={handlePieceLeave}
         highlightedCells={highlightedCells}
         hoveredPiece={hoveredPiece}
+        currentPlayer={player}
       />
 
       <button

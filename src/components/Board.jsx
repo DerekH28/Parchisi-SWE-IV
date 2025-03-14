@@ -1,6 +1,5 @@
 import React from "react";
 import { boardLayout } from "../models/boardLayout";
-//TODO: Player should only be able to hover over there player pieces
 
 /**
  * Defines CSS classes for each board cell type.
@@ -31,6 +30,9 @@ const playerColors = {
 
 /**
  * Renders the game board with pieces placed on the grid.
+ *
+ * Only pieces belonging to the current player (via the `currentPlayer` prop)
+ * will trigger hover events.
  */
 const Board = ({
   piecePositions,
@@ -40,10 +42,11 @@ const Board = ({
   handlePieceLeave,
   highlightedCells,
   hoveredPiece,
+  currentPlayer, // new prop: e.g., "red", "blue", etc.
 }) => {
   console.log("🔹 Rendering Board - highlightedCells:", highlightedCells);
 
-  // Filter out keys in piecePositions that are not arrays (e.g., dice, currentTurn)
+  // Filter out keys that are arrays (i.e. the players' pieces)
   const pieceKeys = Object.keys(piecePositions).filter((key) =>
     Array.isArray(piecePositions[key])
   );
@@ -69,7 +72,7 @@ const Board = ({
                     if (!piece || !piece.coord) return null;
 
                     const pieceId = `${color}${index + 1}`;
-                    const playerColor = playerColors[color] || "bg-gray-700";
+                    const pieceColor = playerColors[color] || "bg-gray-700";
                     const isHovered = hoveredPiece === pieceId;
 
                     if (
@@ -79,23 +82,30 @@ const Board = ({
                       return (
                         <div
                           key={pieceId}
-                          className={`w-6 h-6 ${playerColor} rounded-full cursor-pointer border-2 border-black shadow-lg transition-transform ${
+                          className={`w-6 h-6 ${pieceColor} rounded-full cursor-pointer border-2 border-black shadow-lg transition-transform ${
                             isHovered ? "scale-110 ring-2 ring-yellow-500" : ""
                           }`}
                           onClick={() => onPieceClick(pieceId)}
                           onMouseEnter={() => {
-                            console.log(
-                              `✅ onMouseEnter fired for piece: ${pieceId}`
-                            );
-                            handlePieceHover(
-                              pieceId,
-                              piece.coord,
-                              routes,
-                              color,
-                              piece.lastKnownIndex
-                            );
+                            // Only allow hover if this piece belongs to currentPlayer
+                            if (color === currentPlayer) {
+                              console.log(
+                                `✅ onMouseEnter fired for piece: ${pieceId}`
+                              );
+                              handlePieceHover(
+                                pieceId,
+                                piece.coord,
+                                routes,
+                                color,
+                                piece.lastKnownIndex
+                              );
+                            }
                           }}
-                          onMouseLeave={handlePieceLeave}
+                          onMouseLeave={() => {
+                            if (color === currentPlayer) {
+                              handlePieceLeave();
+                            }
+                          }}
                         />
                       );
                     }
