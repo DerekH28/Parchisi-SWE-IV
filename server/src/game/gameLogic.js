@@ -1,8 +1,8 @@
 import { gameState } from "../utils/gameState.js";
 import { routes } from "../utils/routes.js";
 
-//TODO: Final Stretch Needs to be exactly to home or it skips players turn.
-//TODO: Final Stretch Needs to be exactly to home or it skips players turn.
+//BUG: After every move, the whether the user has any valid moves should be checked.
+//BUG: If a player clicks on a piece that is not theirs, the game will crash.
 //TODO: Implement Safety spaces to prevent capture. Two pieces of different colors on the same tile are not allowed. Unless you are bringing your piece outside of home.
 
 // Home coordinates for each player.
@@ -59,14 +59,42 @@ export const rollDice = (player, currentTurn) => {
 };
 
 /**
+ * Returns the indices for the final stretch.
+ * Here, we assume the final stretch is the last 6 tiles of the route.
+ */
+const getFinalStretchIndices = (path) => {
+  const finalStretchCount = 6;
+  return {
+    start: path.length - finalStretchCount,
+    end: path.length - 1,
+  };
+};
+
+/**
+ * Checks whether the dice roll would overshoot the final destination.
+ * If the piece is in the final stretch, the move is allowed as long as the dice value
+ * does not exceed the remaining tiles. Otherwise, the move is allowed.
+ *
+ * @returns {boolean} - True if the move is allowed, false if it overshoots.
+ */
+const allowFinalStretchMove = (currentIndex, diceValue, path) => {
+  const { start, end } = getFinalStretchIndices(path);
+  if (currentIndex >= start) {
+    const remaining = end - currentIndex;
+    return diceValue <= remaining;
+  }
+  return true;
+};
+
+/**
  * Checks for an opponent piece at the destination.
- * If an opponent piece is found and is alone, it is captured.
- * If an opponent blockade exists, the move is blocked.
+ * If a single opponent piece is present, it is captured.
+ * If multiple opponent pieces are present (an opponent blockade), the move is blocked.
  *
  * @returns {boolean} - True if capture is successful (or nothing to capture), false if blocked.
  */
 const captureOpponentAt = (coord, player) => {
-  // Only iterate over keys that are arrays (player pieces).
+  // Only consider keys that hold arrays (player pieces).
   const opponentColors = Object.keys(gameState).filter(
     (color) => color !== player && Array.isArray(gameState[color])
   );
@@ -75,7 +103,6 @@ const captureOpponentAt = (coord, player) => {
       (p) => p.coord.row === coord.row && p.coord.col === coord.col
     );
     if (oppPieces.length === 1) {
-      // Capture the opponent piece.
       const idx = gameState[opp].findIndex(
         (p) => p.coord.row === coord.row && p.coord.col === coord.col
       );
@@ -86,7 +113,6 @@ const captureOpponentAt = (coord, player) => {
         captured.lastKnownIndex = null;
       }
     } else if (oppPieces.length > 1) {
-      // Opponent blockade exists.
       return false;
     }
   }
@@ -95,7 +121,7 @@ const captureOpponentAt = (coord, player) => {
 
 /**
  * Moves a piece based on the selected dice value.
- * Implements home exit logic, blockades, and capturing of opponent pieces.
+ * Implements home exit logic, blockades, capturing, and prevents overshooting in the final stretch.
  */
 export const movePiece = (player, pieceId, diceValue) => {
   if (!gameState[player]) return { success: false, message: "Invalid player" };
@@ -120,7 +146,7 @@ export const movePiece = (player, pieceId, diceValue) => {
     return { success: true };
   }
 
-  // Get current position index.
+  // Determine current index in the route.
   let currentIndex =
     piece.lastKnownIndex !== undefined
       ? piece.lastKnownIndex
@@ -130,8 +156,14 @@ export const movePiece = (player, pieceId, diceValue) => {
   if (currentIndex === -1)
     return { success: false, message: "Piece position invalid" };
 
+  // Final stretch overshoot check.
+  if (!allowFinalStretchMove(currentIndex, diceValue, path)) {
+    return { success: false, message: "Dice roll exceeds remaining spaces" };
+  }
+
   // Calculate new index and coordinate.
-  let newIndex = Math.min(currentIndex + diceValue, path.length - 1);
+  let newIndex = currentIndex + diceValue;
+  newIndex = Math.min(newIndex, path.length - 1);
   const newCoord = path[newIndex];
 
   if (!isValidDestination(newCoord, player))
