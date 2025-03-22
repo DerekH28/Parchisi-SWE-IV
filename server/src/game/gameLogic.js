@@ -3,61 +3,102 @@ import { routes } from "../utils/routes.js";
 
 //TODO: Final Stretch Needs to be exactly to home or it skips players turn.
 //TODO: Final Stretch Needs to be exactly to home or it skips players turn.
-//TODO: Implement create blockades (two pieces on the same tile) to prevent movement.
-//TODO: Implement a way to capture pieces that are on the same tile.
 //TODO: Implement Safety spaces to prevent capture. Two pieces of different colors on the same tile are not allowed. Unless you are bringing your piece outside of home.
 
-/**
- * Checks if the destination tile is free of a blockade.
- * A blockade exists if there are already 2 pieces of the same color on that tile.
- *
- * @param {object} coord - The destination coordinate { row, col }.
- * @param {string} player - The player's color.
- * @returns {boolean} - True if the tile is not blocked, false otherwise.
- */
-export const isValidDestination = (coord, player) => {
-  const piecesOnTile = gameState[player].filter(
-    (p) => p.coord.row === coord.row && p.coord.col === coord.col
-  );
-  return piecesOnTile.length < 2;
+// Home coordinates for each player.
+const homeCoordinates = {
+  red: [
+    { row: 2, col: 2 },
+    { row: 2, col: 3 },
+    { row: 3, col: 2 },
+    { row: 3, col: 3 },
+  ],
+  blue: [
+    { row: 2, col: 11 },
+    { row: 2, col: 12 },
+    { row: 3, col: 11 },
+    { row: 3, col: 12 },
+  ],
+  yellow: [
+    { row: 11, col: 2 },
+    { row: 11, col: 3 },
+    { row: 12, col: 2 },
+    { row: 12, col: 3 },
+  ],
+  green: [
+    { row: 11, col: 11 },
+    { row: 11, col: 12 },
+    { row: 12, col: 11 },
+    { row: 12, col: 12 },
+  ],
 };
 
+const getHomeCoordinate = (color, pieceIndex) =>
+  homeCoordinates[color][pieceIndex];
+
 /**
- * Rolls two dice for the current player if it's their turn.
- * @param {string} player - The player rolling the dice.
- * @param {string} currentTurn - The player whose turn it is.
- * @returns {object} - Success status and dice values.
+ * Returns true if there are fewer than 2 of the player's own pieces at the coordinate.
+ */
+export const isValidDestination = (coord, player) =>
+  gameState[player].filter(
+    (p) => p.coord.row === coord.row && p.coord.col === coord.col
+  ).length < 2;
+
+/**
+ * Rolls two dice for the current player.
  */
 export const rollDice = (player, currentTurn) => {
-  if (!player || !gameState[player]) {
-    return { success: false, message: "Invalid player" };
+  if (!player || !gameState[player] || player !== currentTurn) {
+    return { success: false, message: "Invalid player or not your turn" };
   }
-  if (player !== currentTurn) {
-    return { success: false, message: "Not your turn" };
-  }
-
   const dice = [
     Math.floor(Math.random() * 6) + 1,
     Math.floor(Math.random() * 6) + 1,
   ];
-  console.log(`🎲 ${player} rolled: ${dice[0]} and ${dice[1]}`);
-
   return { success: true, dice };
 };
 
 /**
- * Moves a piece based on the selected dice value.
- * Ensures correct progression, prevents resetting, and handles duplicate tiles (blockades) properly.
+ * Checks for an opponent piece at the destination.
+ * If an opponent piece is found and is alone, it is captured.
+ * If an opponent blockade exists, the move is blocked.
  *
- * @param {string} player - The player making the move.
- * @param {string} pieceId - The piece being moved (e.g., "red1").
- * @param {number} diceValue - The dice value used for movement.
- * @returns {object} - Success status.
+ * @returns {boolean} - True if capture is successful (or nothing to capture), false if blocked.
+ */
+const captureOpponentAt = (coord, player) => {
+  // Only iterate over keys that are arrays (player pieces).
+  const opponentColors = Object.keys(gameState).filter(
+    (color) => color !== player && Array.isArray(gameState[color])
+  );
+  for (const opp of opponentColors) {
+    const oppPieces = gameState[opp].filter(
+      (p) => p.coord.row === coord.row && p.coord.col === coord.col
+    );
+    if (oppPieces.length === 1) {
+      // Capture the opponent piece.
+      const idx = gameState[opp].findIndex(
+        (p) => p.coord.row === coord.row && p.coord.col === coord.col
+      );
+      if (idx !== -1) {
+        const captured = gameState[opp][idx];
+        captured.inHome = true;
+        captured.coord = getHomeCoordinate(opp, captured.index);
+        captured.lastKnownIndex = null;
+      }
+    } else if (oppPieces.length > 1) {
+      // Opponent blockade exists.
+      return false;
+    }
+  }
+  return true;
+};
+
+/**
+ * Moves a piece based on the selected dice value.
+ * Implements home exit logic, blockades, and capturing of opponent pieces.
  */
 export const movePiece = (player, pieceId, diceValue) => {
-  if (!gameState[player]) {
-    return { success: false, message: "Invalid player" };
-  }
+  if (!gameState[player]) return { success: false, message: "Invalid player" };
 
   const pieceIndex = parseInt(pieceId.replace(player, "")) - 1;
   if (pieceIndex < 0 || pieceIndex >= gameState[player].length) {
@@ -67,72 +108,45 @@ export const movePiece = (player, pieceId, diceValue) => {
   let piece = gameState[player][pieceIndex];
   const path = routes[player].path;
 
-  // Home exit logic: must roll exactly 5 to leave home.
+  // Home exit logic: require a 5 to leave home.
   if (piece.inHome) {
-    if (diceValue !== 5) {
-      console.log(`🚫 ${pieceId} must roll a 5 to leave home.`);
+    if (diceValue !== 5)
       return { success: false, message: "Must roll exactly 5 to leave home" };
-    }
     const startingTile = path[0];
-    if (!isValidDestination(startingTile, player)) {
-      console.log(
-        `🚫 Blockade at starting tile (${startingTile.row}, ${startingTile.col}). Move blocked.`
-      );
-      return {
-        success: false,
-        message: "Blockade in place at the starting tile",
-      };
-    }
-    console.log(`🚀 ${pieceId} is leaving home at index 0!`);
-    gameState[player][pieceIndex] = {
-      ...piece,
-      coord: startingTile,
-      inHome: false,
-      lastKnownIndex: 0,
-    };
+    if (!isValidDestination(startingTile, player))
+      return { success: false, message: "Blockade at starting tile" };
+    piece = { ...piece, inHome: false, coord: startingTile, lastKnownIndex: 0 };
+    gameState[player][pieceIndex] = piece;
     return { success: true };
   }
 
-  // Find the last known position of the piece on its path.
+  // Get current position index.
   let currentIndex =
-    piece.lastKnownIndex ??
-    path.findIndex(
-      (tile) => tile.row === piece.coord.row && tile.col === piece.coord.col
-    );
-  if (currentIndex === -1) {
-    console.warn(
-      `⚠️ ${pieceId} not found in route! Keeping last known position.`
-    );
-    return {
-      success: false,
-      message: "Piece position invalid. Movement blocked.",
-    };
-  }
+    piece.lastKnownIndex !== undefined
+      ? piece.lastKnownIndex
+      : path.findIndex(
+          (tile) => tile.row === piece.coord.row && tile.col === piece.coord.col
+        );
+  if (currentIndex === -1)
+    return { success: false, message: "Piece position invalid" };
 
-  // Move forward based on the dice roll.
-  let newIndex = currentIndex + diceValue;
-  newIndex = Math.min(newIndex, path.length - 1);
+  // Calculate new index and coordinate.
+  let newIndex = Math.min(currentIndex + diceValue, path.length - 1);
   const newCoord = path[newIndex];
 
-  // Check for a blockade on the new destination.
-  if (!isValidDestination(newCoord, player)) {
-    console.log(
-      `🚫 Blockade: ${pieceId} cannot move to tile at row ${newCoord.row}, col ${newCoord.col}.`
-    );
-    return {
-      success: false,
-      message: "Blockade in place: Cannot move to tile",
-    };
+  if (!isValidDestination(newCoord, player))
+    return { success: false, message: "Blockade in place" };
+
+  if (!captureOpponentAt(newCoord, player)) {
+    return { success: false, message: "Opponent blockade present" };
   }
 
-  console.log(
-    `✅ ${pieceId} moved from index ${currentIndex} to index ${newIndex}`
-  );
   gameState[player][pieceIndex] = {
     ...piece,
     coord: newCoord,
     lastKnownIndex: newIndex,
   };
-
   return { success: true };
 };
+
+export { captureOpponentAt };
