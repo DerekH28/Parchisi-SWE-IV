@@ -1,5 +1,6 @@
 import React from "react";
 import { boardLayout } from "../models/boardLayout";
+import { safeSpaces } from "../models/safeSpaces";
 
 /**
  * Defines CSS classes for each board cell type.
@@ -16,6 +17,11 @@ const cellClasses = {
   "slot-red": "bg-red-400 border border-red-500",
   "slot-green": "bg-green-400 border border-green-500",
   unused: "bg-gray-100",
+  //muted home exit safe space colors
+  "dark-red-gray": "bg-[#7f4f4f]",  
+  "dark-yellow-gray": "bg-[#7a6e3f]", 
+  "dark-green-gray": "bg-[#4e6e50]", 
+  "dark-blue-gray": "bg-[#4f5f6f]",  
 };
 
 /**
@@ -26,6 +32,34 @@ const playerColors = {
   blue: "bg-blue-500",
   yellow: "bg-yellow-500",
   green: "bg-green-500",
+};
+/**
+ * check if cell is safe spot
+ */
+const isSafeSpace = (rowIndex, colIndex) => {
+  return safeSpaces.some(spot => spot.row === rowIndex && spot.col === colIndex);
+};
+/**
+ * Asssigns specific safe space colors depending on whether they are each players home exit
+ */
+const getSpaceClass = (rowIndex, colIndex) => {
+  // Check if it's a safe space and return the appropriate class
+const safeSpace = safeSpaces.find(space => space.row === rowIndex && space.col === colIndex);
+if (safeSpace) {
+    // Find the specific color class for the safe space
+  if (rowIndex === 3 && colIndex === 6) {
+    return "bg-dark-red-gray";  //Red exit safe space
+  } else if (rowIndex === 8 && colIndex === 3) {
+    return "bg-dark-yellow-gray";  //Yellow exit safe space
+  } else if (rowIndex === 11 && colIndex === 8) {
+    return "bg-dark-green-gray";  //Green exit safe space
+  } else if (rowIndex === 6 && colIndex === 11) {
+    return "bg-dark-blue-gray";  //Blue exit safe space
+  } else {
+    return "bg-gray-400";  // Default gray for all other safe spaces
+  }
+}
+return "";
 };
 
 /**
@@ -63,9 +97,11 @@ const Board = ({
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`w-10 h-10 flex items-center justify-center ${
-                  cellClasses[cell] || ""
-                } ${isHighlighted ? "bg-yellow-300 border-2 border-yellow-500" : ""}`}
+                className={`w-10 h-10 flex items-center justify-center
+                  ${cellClasses[cell] || ""}
+                  ${isHighlighted ? "bg-yellow-300 border-2 border-yellow-500" : ""}
+                  ${getSpaceClass(rowIndex, colIndex)}
+                `}
               >
                 {pieceKeys.map((color) =>
                   piecePositions[color].map((piece, index) => {
@@ -122,3 +158,4 @@ const Board = ({
 };
 
 export default Board;
+

@@ -37,13 +37,34 @@ const getHomeCoordinate = (color, pieceIndex) =>
   homeCoordinates[color][pieceIndex];
 
 /**
- * Returns true if there are fewer than 2 of the player's own pieces at the coordinate.
+ * Returns true if the destination is valid.
+ * A destination is valid if there are fewer than 2 of the player's own pieces at the coordinate,
+ * and if it's not a safe space occupied by another player's piece.
  */
-export const isValidDestination = (coord, player) =>
-  gameState[player].filter(
-    (p) => p.coord.row === coord.row && p.coord.col === coord.col
-  ).length < 2;
+export const isValidDestination = (coord, player) => {
+  const isSafe = safeSpaces.some(
+    (space) => space.row === coord.row && space.col === coord.col
+  );
+  if(isSafe){
+    for(const opponent of Object.keys(gameState)){
+      if (opponent === player) continue;
 
+      const opponentOnSafeSpace = gameState[opponent].some(
+        (p) => p.coord.row === coord.row && p.coord.col === coord.col
+      );
+      if (opponentOnSafeSpace){
+        return false
+      }
+    }
+  }
+  const playerPiecesAtCoord = gameState[player].filter(
+    (p) => p.coord.row === coord.row && p.coord.col === coord.col
+  );
+  // gameState[player].filter(
+  //   (p) => p.coord.row === coord.row && p.coord.col === coord.col
+  // ).length < 2;
+  return playerPiecesAtCoord.length < 2;
+};
 /**
  * Rolls two dice for the current player.
  */
@@ -120,6 +141,13 @@ const captureOpponentAt = (coord, player) => {
 };
 
 /**
+ * Checks if a space to move to is a safe space from the coordinates
+ */
+const isSafeSpace = (row, col) => {
+  return safeSpaces.some(spot => spot.row === row && spot.col === col);
+};
+
+/**
  * Moves a piece based on the selected dice value.
  * Implements home exit logic, blockades, capturing, and prevents overshooting in the final stretch.
  */
@@ -167,7 +195,7 @@ export const movePiece = (player, pieceId, diceValue) => {
   const newCoord = path[newIndex];
 
   if (!isValidDestination(newCoord, player))
-    return { success: false, message: "Blockade in place" };
+    return { success: false, message: "Blockade in place or safe space occupied" };
 
   if (!captureOpponentAt(newCoord, player)) {
     return { success: false, message: "Opponent blockade present" };
