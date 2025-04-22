@@ -1,11 +1,12 @@
 import { gameState } from "../utils/gameState.js";
 import { routes } from "../utils/routes.js";
+import { safeSpaces } from "../../../src/models/safeSpaces.js";
 
-//BUG: After every move, the whether the user has any valid moves should be checked.
+//BUG: After every move, whether the user has any valid moves should be checked.
 //BUG: If a player clicks on a piece that is not theirs, the game will crash.
 //TODO: Implement Safety spaces to prevent capture. Two pieces of different colors on the same tile are not allowed. Unless you are bringing your piece outside of home.
 
-// Home coordinates for each player.
+// Home coordinates for each player
 const homeCoordinates = {
   red: [
     { row: 2, col: 2 },
@@ -39,32 +40,40 @@ const getHomeCoordinate = (color, pieceIndex) =>
 /**
  * Returns true if the destination is valid.
  * A destination is valid if there are fewer than 2 of the player's own pieces at the coordinate,
- * and if it's not a safe space occupied by another player's piece.
+ * and if it's not a safe space occupied by another player's piece (unless leaving home).
  */
-export const isValidDestination = (coord, player) => {
+export const isValidDestination = (coord, player, isLeavingHome = false) => {
   const isSafe = safeSpaces.some(
     (space) => space.row === coord.row && space.col === coord.col
   );
-  if(isSafe){
-    for(const opponent of Object.keys(gameState)){
+
+  if (isSafe && !isLeavingHome) {
+    for (const opponent of Object.keys(gameState)) {
       if (opponent === player) continue;
 
-      const opponentOnSafeSpace = gameState[opponent].some(
+      const opponentPieces = gameState[opponent];
+
+      if (!Array.isArray(opponentPieces)) {
+        continue; // 🚨 Important: skip if not an array
+      }
+
+      const opponentOnSafeSpace = opponentPieces.some(
         (p) => p.coord.row === coord.row && p.coord.col === coord.col
       );
-      if (opponentOnSafeSpace){
-        return false
+
+      if (opponentOnSafeSpace) {
+        return false;
       }
     }
   }
+
   const playerPiecesAtCoord = gameState[player].filter(
     (p) => p.coord.row === coord.row && p.coord.col === coord.col
   );
-  // gameState[player].filter(
-  //   (p) => p.coord.row === coord.row && p.coord.col === coord.col
-  // ).length < 2;
+
   return playerPiecesAtCoord.length < 2;
 };
+
 /**
  * Rolls two dice for the current player.
  */
@@ -72,6 +81,7 @@ export const rollDice = (player, currentTurn) => {
   if (!player || !gameState[player] || player !== currentTurn) {
     return { success: false, message: "Invalid player or not your turn" };
   }
+
   const dice = [
     Math.floor(Math.random() * 6) + 1,
     Math.floor(Math.random() * 6) + 1,
@@ -115,14 +125,15 @@ const allowFinalStretchMove = (currentIndex, diceValue, path) => {
  * @returns {boolean} - True if capture is successful (or nothing to capture), false if blocked.
  */
 const captureOpponentAt = (coord, player) => {
-  // Only consider keys that hold arrays (player pieces).
   const opponentColors = Object.keys(gameState).filter(
     (color) => color !== player && Array.isArray(gameState[color])
   );
+
   for (const opp of opponentColors) {
     const oppPieces = gameState[opp].filter(
       (p) => p.coord.row === coord.row && p.coord.col === coord.col
     );
+
     if (oppPieces.length === 1) {
       const idx = gameState[opp].findIndex(
         (p) => p.coord.row === coord.row && p.coord.col === coord.col
@@ -137,6 +148,7 @@ const captureOpponentAt = (coord, player) => {
       return false;
     }
   }
+
   return true;
 };
 
@@ -144,7 +156,7 @@ const captureOpponentAt = (coord, player) => {
  * Checks if a space to move to is a safe space from the coordinates
  */
 const isSafeSpace = (row, col) => {
-  return safeSpaces.some(spot => spot.row === row && spot.col === col);
+  return safeSpaces.some((spot) => spot.row === row && spot.col === col);
 };
 
 /**
@@ -155,11 +167,16 @@ export const movePiece = (player, pieceId, diceValue) => {
   if (!gameState[player]) return { success: false, message: "Invalid player" };
 
   const pieceIndex = parseInt(pieceId.replace(player, "")) - 1;
-  if (pieceIndex < 0 || pieceIndex >= gameState[player].length) {
-    return { success: false, message: "Invalid piece selection" };
-  }
+if (pieceIndex < 0 || pieceIndex >= gameState[player].length) {
+  return { success: false, message: "Invalid piece selection" };
+}
 
-  let piece = gameState[player][pieceIndex];
+let piece = gameState[player][pieceIndex];
+
+if (!piece) {
+  return { success: false, message: "Piece not found" };
+}
+
   const path = routes[player].path;
 
   // Home exit logic: require a 5 to leave home.
@@ -167,7 +184,7 @@ export const movePiece = (player, pieceId, diceValue) => {
     if (diceValue !== 5)
       return { success: false, message: "Must roll exactly 5 to leave home" };
     const startingTile = path[0];
-    if (!isValidDestination(startingTile, player))
+    if (!isValidDestination(startingTile, player, true))
       return { success: false, message: "Blockade at starting tile" };
     piece = { ...piece, inHome: false, coord: startingTile, lastKnownIndex: 0 };
     gameState[player][pieceIndex] = piece;
@@ -206,6 +223,7 @@ export const movePiece = (player, pieceId, diceValue) => {
     coord: newCoord,
     lastKnownIndex: newIndex,
   };
+
   return { success: true };
 };
 
