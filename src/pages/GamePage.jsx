@@ -4,6 +4,9 @@ import { useAuth } from "../context/AuthProvider.jsx";
 import { signOut } from "../api/auth";
 import Game from "../components/Game";
 
+//TODO: create each of the 4 profiles in the 4 corners
+//make each of them their own components, i.e. profile image components
+
 /**
  * Renders the Game page.
  */

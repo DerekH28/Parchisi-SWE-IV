@@ -1,4 +1,9 @@
 // boardLayout.js
+
+//TODO: safe space coordinates
+import { safeSpaces } from './safeSpaces';
+
+
 export const boardLayout = (() => {
   const size = 15;
   // Create a 15x15 grid filled with "unused"
@@ -53,6 +58,7 @@ export const boardLayout = (() => {
     for (let c = 6; c <= 8; c++) {
       board[r][c] = c === 7 && r !== size - 1 ? "slot-green" : "track";
     }
+    //for when its safe space
   }
 
   // Fill left track: rows 6-8, cols 0-5.
@@ -70,6 +76,22 @@ export const boardLayout = (() => {
       board[r][c] = r === 7 && c !== size - 1 ? "slot-blue" : "track";
     }
   }
+  //fills in the safe spaces around the board so they are all gray based on safeSpaces.jsx coordinates
+  //attempting to have each home exit a grayed verison of that player color
+  safeSpaces.forEach(space => {
+    const {row, col} = space;
+    if (row === 3 && col === 6) {
+      board[row][col] = "dark-red-gray";
+    } else if (row === 8 && col === 3) {
+      board[row][col] = "dark-yellow-gray";
+    } else if (row === 11 && col === 8) {
+      board[row][col] = "dark-green-gray";
+    } else if (row === 6 && col === 11) {
+      board[row][col] = "dark-blue-gray";
+    } else {
+      board[row][col] = "gray";
+    }
+  });
 
   return board;
 })();
