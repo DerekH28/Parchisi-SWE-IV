@@ -4,7 +4,6 @@ import { safeSpaces } from "../../../src/models/safeSpaces.js";
 
 //BUG: After every move, whether the user has any valid moves should be checked.
 //BUG: If a player clicks on a piece that is not theirs, the game will crash.
-//TODO: Implement Safety spaces to prevent capture. Two pieces of different colors on the same tile are not allowed. Unless you are bringing your piece outside of home.
 
 // Home coordinates for each player
 const homeCoordinates = {
@@ -54,7 +53,7 @@ export const isValidDestination = (coord, player, isLeavingHome = false) => {
       const opponentPieces = gameState[opponent];
 
       if (!Array.isArray(opponentPieces)) {
-        continue; // 🚨 Important: skip if not an array
+        continue; 
       }
 
       const opponentOnSafeSpace = opponentPieces.some(
@@ -152,12 +151,6 @@ const captureOpponentAt = (coord, player) => {
   return true;
 };
 
-/**
- * Checks if a space to move to is a safe space from the coordinates
- */
-const isSafeSpace = (row, col) => {
-  return safeSpaces.some((spot) => spot.row === row && spot.col === col);
-};
 
 /**
  * Moves a piece based on the selected dice value.
@@ -211,11 +204,12 @@ if (!piece) {
   newIndex = Math.min(newIndex, path.length - 1);
   const newCoord = path[newIndex];
 
-  if (!isValidDestination(newCoord, player))
-    return { success: false, message: "Blockade in place or safe space occupied" };
-
   if (!captureOpponentAt(newCoord, player)) {
     return { success: false, message: "Opponent blockade present" };
+  }
+
+  if (isBlockadeOnPath(path, currentIndex, newIndex, player)) {
+    return { success: false, message: "Move blocked by a blockade ahead" };
   }
 
   gameState[player][pieceIndex] = {
@@ -224,7 +218,38 @@ if (!piece) {
     lastKnownIndex: newIndex,
   };
 
+  
+
   return { success: true };
+};
+
+//BUG: When the player first clicks on the piece's move that is blocked by a blockade, it doesn't allow them to move but it doesn't show a message
+//then if you try to click again it allows the piece to move pass and it moves twice the length of the dice roll selected
+const isBlockadeOnPath = (path, currentIndex, newIndex, player) => {
+  for (let i = currentIndex + 1; i < newIndex; i++) {
+    const coord = path[i];
+    const playerPieces = gameState[player].filter(
+      (p) => p.coord.row === coord.row && p.coord.col === coord.col
+    );
+
+    if (playerPieces.length === 2) {
+      return true; // Own blockade
+    }
+
+    // Check if another player has a blockade there
+    for (const color of Object.keys(gameState)) {
+      if (color === player || !Array.isArray(gameState[color])) continue;
+
+      const opponentPieces = gameState[color].filter(
+        (p) => p.coord.row === coord.row && p.coord.col === coord.col
+      );
+
+      if (opponentPieces.length >= 2) {
+        return true; // Blockade by another player
+      }
+    }
+  }
+  return false;
 };
 
 export { captureOpponentAt };
