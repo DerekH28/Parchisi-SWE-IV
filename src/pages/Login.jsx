@@ -57,13 +57,13 @@ const Login = () => {
           <div className="flex bg-white rounded shadow-lg overflow-hidden max-w-4xl w-full">
             {/* Left side - Sign In */}
             <div className="w-1/2 p-8 flex flex-col justify-center">
-              <h2 className="text-2xl font-bold mb-6">Sign In</h2>
+              <h2 className="text-2xl font-bold mb-6 text-gray-800">Sign In</h2>
 
               {/* Username or Email */}
               <div className="mb-6">
                 <label
                   htmlFor="email"
-                  className="text-sm font-medium mb-1 block"
+                  className="text-sm font-medium mb-1 block text-gray-700"
                 >
                   Username or Email
                 </label>
@@ -71,7 +71,7 @@ const Login = () => {
                   type="email"
                   id="email"
                   placeholder="e.g. skibidisigmas123"
-                  className="p-2 border rounded-lg w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="p-2 border rounded-lg w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -81,7 +81,7 @@ const Login = () => {
               <div className="mb-6">
                 <label
                   htmlFor="password"
-                  className="text-sm font-medium mb-1 block"
+                  className="text-sm font-medium mb-1 block text-gray-700"
                 >
                   Password
                 </label>
@@ -89,7 +89,7 @@ const Login = () => {
                   type="password"
                   id="password"
                   placeholder="e.g. sup3rh@rdPa$$word"
-                  className="p-2 border rounded-lg w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="p-2 border rounded-lg w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -114,8 +114,8 @@ const Login = () => {
 
             {/* Right side - Sign Up */}
             <div className="w-1/2 bg-blue-100 p-8 flex flex-col justify-center items-center text-center">
-              <h2 className="text-2xl font-bold mb-4">Welcome to Login</h2>
-              <p className="mb-6">Don’t have an account?</p>
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Welcome to Login</h2>
+              <p className="mb-6 text-gray-700">Don't have an account?</p>
               <a
                 href="/signup"
                 className="px-6 py-2 border border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition"
