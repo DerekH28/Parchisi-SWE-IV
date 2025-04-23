@@ -53,7 +53,7 @@ export const isValidDestination = (coord, player, isLeavingHome = false) => {
       const opponentPieces = gameState[opponent];
 
       if (!Array.isArray(opponentPieces)) {
-        continue; 
+        continue;
       }
 
       const opponentOnSafeSpace = opponentPieces.some(
@@ -160,15 +160,15 @@ export const movePiece = (player, pieceId, diceValue) => {
   if (!gameState[player]) return { success: false, message: "Invalid player" };
 
   const pieceIndex = parseInt(pieceId.replace(player, "")) - 1;
-if (pieceIndex < 0 || pieceIndex >= gameState[player].length) {
-  return { success: false, message: "Invalid piece selection" };
-}
+  if (pieceIndex < 0 || pieceIndex >= gameState[player].length) {
+    return { success: false, message: "Invalid piece selection" };
+  }
 
-let piece = gameState[player][pieceIndex];
+  let piece = gameState[player][pieceIndex];
 
-if (!piece) {
-  return { success: false, message: "Piece not found" };
-}
+  if (!piece) {
+    return { success: false, message: "Piece not found" };
+  }
 
   const path = routes[player].path;
 
@@ -189,8 +189,8 @@ if (!piece) {
     piece.lastKnownIndex !== undefined
       ? piece.lastKnownIndex
       : path.findIndex(
-          (tile) => tile.row === piece.coord.row && tile.col === piece.coord.col
-        );
+        (tile) => tile.row === piece.coord.row && tile.col === piece.coord.col
+      );
   if (currentIndex === -1)
     return { success: false, message: "Piece position invalid" };
 
@@ -204,21 +204,21 @@ if (!piece) {
   newIndex = Math.min(newIndex, path.length - 1);
   const newCoord = path[newIndex];
 
-  if (!captureOpponentAt(newCoord, player)) {
-    return { success: false, message: "Opponent blockade present" };
-  }
-
+  // Check for blockades before attempting to move
   if (isBlockadeOnPath(path, currentIndex, newIndex, player)) {
     return { success: false, message: "Move blocked by a blockade ahead" };
   }
 
+  if (!captureOpponentAt(newCoord, player)) {
+    return { success: false, message: "Opponent blockade present" };
+  }
+
+  // Update piece state only if all checks pass
   gameState[player][pieceIndex] = {
     ...piece,
     coord: newCoord,
     lastKnownIndex: newIndex,
   };
-
-  
 
   return { success: true };
 };
