@@ -1,21 +1,25 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../api/supabase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const { pathname } = useLocation();   // ← grab current path
 
   useEffect(() => {
     const checkUser = async () => {
       const {
-        data: { user },
+        data: { user: currentUser },
       } = await supabase.auth.getUser();
-      setUser(user);
+      setUser(currentUser);
 
-      if (user) navigate("/game");
+      // only auto‑nav from the Home screen ("/"), not everywhere
+      if (currentUser && pathname === "/") {
+        navigate("/Menu");
+      }
     };
 
     checkUser();
@@ -25,9 +29,8 @@ export const AuthProvider = ({ children }) => {
         setUser(session?.user || null);
       }
     );
-
     return () => authListener.subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, pathname]);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

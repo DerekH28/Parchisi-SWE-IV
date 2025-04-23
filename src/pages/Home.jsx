@@ -12,7 +12,7 @@ const Home = () => {
   // Redirect logged-in users to the game page
   useEffect(() => {
     if (user) {
-      navigate("/game");
+      navigate("/Menu");
     }
   }, [user, navigate]);
 
@@ -28,9 +28,11 @@ const Home = () => {
           Sign Up / Login
         </Link>
       ) : (
+        <>
         <Link to="/game" className="px-6 py-3 text-white bg-blue-600 rounded">
           Start Game
         </Link>
+      </>
       )}
     </div>
   );
