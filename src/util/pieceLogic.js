@@ -16,11 +16,17 @@ export const handlePieceHover = (
   routes,
   player,
   lastKnownIndex,
-  diceValues,
-  selectedDice,
+  diceValues = [],
+  selectedDice = [],
   setHoveredPiece,
   setHighlightedCells
 ) => {
+  // Validate required parameters
+  if (!pieceId || !piecePos || !routes || !player || !setHoveredPiece || !setHighlightedCells) {
+    console.warn('Missing required parameters for handlePieceHover');
+    return;
+  }
+
   setHoveredPiece(pieceId);
 
   if (selectedDice.length === 0) {
@@ -28,32 +34,50 @@ export const handlePieceHover = (
     return;
   }
 
-  if (!diceValues || diceValues.length === 0) return;
+  if (!diceValues || diceValues.length === 0) {
+    setHighlightedCells([]);
+    return;
+  }
 
   const path = routes[player]?.path;
-  if (!path) return;
+  if (!path) {
+    console.warn('No path found for player:', player);
+    setHighlightedCells([]);
+    return;
+  }
 
   let currentIndex =
     typeof lastKnownIndex === "number"
       ? lastKnownIndex
       : path.findIndex(
-          (tile) => tile.row === piecePos.row && tile.col === piecePos.col
-        );
+        (tile) => tile.row === piecePos.row && tile.col === piecePos.col
+      );
 
-  if (typeof currentIndex !== "number" || currentIndex === -1) return;
+  if (typeof currentIndex !== "number" || currentIndex === -1) {
+    console.warn('Invalid current index for piece:', pieceId);
+    setHighlightedCells([]);
+    return;
+  }
 
   const moveDistance = selectedDice.reduce(
     (sum, index) => sum + (diceValues[index] || 0),
     0
   );
 
-  if (isNaN(moveDistance) || moveDistance <= 0) return;
+  if (isNaN(moveDistance) || moveDistance <= 0) {
+    console.warn('Invalid move distance calculated:', moveDistance);
+    setHighlightedCells([]);
+    return;
+  }
 
   let newIndex = Math.min(currentIndex + moveDistance, path.length - 1);
   let newTile = path[newIndex];
 
-  if (newTile) setHighlightedCells([newTile]);
-  else setHighlightedCells([]);
+  if (newTile) {
+    setHighlightedCells([newTile]);
+  } else {
+    setHighlightedCells([]);
+  }
 };
 
 /**

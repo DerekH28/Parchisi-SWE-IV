@@ -76,7 +76,9 @@ const Board = ({
   handlePieceLeave,
   highlightedCells,
   hoveredPiece,
-  currentPlayer, // new prop: e.g., "red", "blue", etc.
+  currentPlayer,
+  diceValues = [],
+  selectedDice = [],
 }) => {
   console.log("🔹 Rendering Board - highlightedCells:", highlightedCells);
 
@@ -84,6 +86,27 @@ const Board = ({
   const pieceKeys = Object.keys(piecePositions).filter((key) =>
     Array.isArray(piecePositions[key])
   );
+
+  const handleMouseEnter = (pieceId, piece, color) => {
+    if (color === currentPlayer) {
+      console.log(`✅ onMouseEnter fired for piece: ${pieceId}`);
+      handlePieceHover(
+        pieceId,
+        piece.coord,
+        routes,
+        color,
+        piece.lastKnownIndex,
+        diceValues,
+        selectedDice
+      );
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (currentPlayer) {
+      handlePieceLeave();
+    }
+  };
 
   return (
     <div className="overflow-hidden rounded-xl">
@@ -122,26 +145,8 @@ const Board = ({
                             isHovered ? "scale-110 ring-2 ring-yellow-500" : ""
                           }`}
                           onClick={() => onPieceClick(pieceId)}
-                          onMouseEnter={() => {
-                            // Only allow hover if this piece belongs to currentPlayer
-                            if (color === currentPlayer) {
-                              console.log(
-                                `✅ onMouseEnter fired for piece: ${pieceId}`
-                              );
-                              handlePieceHover(
-                                pieceId,
-                                piece.coord,
-                                routes,
-                                color,
-                                piece.lastKnownIndex
-                              );
-                            }
-                          }}
-                          onMouseLeave={() => {
-                            if (color === currentPlayer) {
-                              handlePieceLeave();
-                            }
-                          }}
+                          onMouseEnter={() => handleMouseEnter(pieceId, piece, color)}
+                          onMouseLeave={handleMouseLeave}
                         />
                       );
                     }
