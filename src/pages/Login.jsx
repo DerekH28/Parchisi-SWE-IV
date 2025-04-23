@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthProvider.jsx";
 import backgroundImage from "../assets/login_background_2.jpg";
 import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 
+
 const Login = () => {
   const { user } = useAuth();
   const [email, setEmail] = useState("");
