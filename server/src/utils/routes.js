@@ -6,6 +6,7 @@
 export const routes = {
   red: {
     path: [
+      { row: 3, col: 6 },
       { row: 4, col: 6 },
       { row: 5, col: 6 },
       { row: 6, col: 5 },
@@ -64,6 +65,7 @@ export const routes = {
   },
   blue: {
     path: [
+      { row: 6, col: 11 },
       { row: 6, col: 10 },
       { row: 6, col: 9 },
       { row: 5, col: 8 },
@@ -122,6 +124,7 @@ export const routes = {
   },
   green: {
     path: [
+      { row: 11, col: 8 },
       { row: 10, col: 8 },
       { row: 9, col: 8 },
       { row: 8, col: 9 },
@@ -180,6 +183,7 @@ export const routes = {
   },
   yellow: {
     path: [
+      { row: 8, col: 3 },
       { row: 8, col: 4 },
       { row: 8, col: 5 },
       { row: 9, col: 6 },

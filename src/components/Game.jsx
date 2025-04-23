@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import useSocket from "../hooks/useSocket";
 import useGameLogic from "../hooks/useGameLogic";
 import Board from "./Board";
 import { routes } from "../util/routes";
 
 const Game = () => {
+  const [notification, setNotification] = useState(null);
   const { socket, player, diceValues, currentTurn, positions, setDiceValues } =
     useSocket();
   const {
@@ -19,27 +20,108 @@ const Game = () => {
   } = useGameLogic(socket);
 
   /**
+   * Shows a notification message that automatically disappears after 3 seconds
+   */
+  const showNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  /**
    * Handles rolling dice, ensuring only the current player can roll.
    */
   const rollDice = () => {
     if (!player) return;
     if (player !== currentTurn) {
-      console.error("❌ Not your turn to roll dice!");
+      showNotification("❌ Not your turn to roll dice!");
       return;
     }
     console.log(`🎲 ${player} rolling dice...`);
     socket.emit("roll-dice", player, (response) => {
       if (!response.success) {
-        console.error("❌ Dice roll failed:", response.message);
+        showNotification(`❌ Dice roll failed: ${response.message}`);
       } else {
         setDiceValues(response.dice);
         resetDiceSelection();
+        
+        // Check if player has any valid moves
+        const hasValidMoves = checkForValidMoves(response.dice);
+        if (!hasValidMoves) {
+          showNotification("⚠️ No valid moves available with this roll!");
+        }
       }
     });
   };
 
+  /**
+   * Checks if the player has any valid moves with the current dice roll
+   */
+  const checkForValidMoves = (dice) => {
+    if (!player || !positions[player]) return false;
+
+    const playerPieces = positions[player];
+    const path = routes[player]?.path;
+
+    if (!path) return false;
+
+    // Check if any piece can leave home (requires a 5)
+    const canLeaveHome = playerPieces.some(piece => {
+      if (!piece.inHome) return false;
+      
+      // Check if any die value is 5
+      const canLeaveWithIndividualDice = dice.includes(5);
+      
+      // Check if sum of dice is 5
+      const sumOfDice = dice.reduce((sum, die) => sum + die, 0);
+      const canLeaveWithSum = sumOfDice === 5;
+
+      return canLeaveWithIndividualDice || canLeaveWithSum;
+    });
+
+    // Check if any piece on the board can move
+    const canMoveOnBoard = playerPieces.some(piece => {
+      if (piece.inHome) return false;
+      
+      const currentIndex = piece.lastKnownIndex;
+      if (currentIndex === undefined || currentIndex === -1) return false;
+
+      // Check individual die values
+      const canMoveWithIndividualDice = dice.some(dieValue => {
+        const newIndex = currentIndex + dieValue;
+        return newIndex < path.length && newIndex >= 0;
+      });
+
+      // Check sum of dice
+      const sumOfDice = dice.reduce((sum, die) => sum + die, 0);
+      const canMoveWithSum = (currentIndex + sumOfDice) < path.length && (currentIndex + sumOfDice) >= 0;
+
+      return canMoveWithIndividualDice || canMoveWithSum;
+    });
+
+    const hasValidMoves = canLeaveHome || canMoveOnBoard;
+    
+    // Debug logging
+    console.log('Move validation:', {
+      player,
+      dice,
+      canLeaveHome,
+      canMoveOnBoard,
+      hasValidMoves
+    });
+
+    return hasValidMoves;
+  };
+
   return (
     <div className="flex flex-col items-center">
+      {notification && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out">
+            <p className="text-lg font-semibold">{notification}</p>
+          </div>
+        </div>
+      )}
+
       <h2 className="mb-4 text-xl font-bold">
         {player
           ? `You are Player: ${String(player).toUpperCase()}`
@@ -54,15 +136,18 @@ const Game = () => {
       <Board
         piecePositions={positions}
         routes={routes}
-        onPieceClick={(pieceId) =>
-          handlePieceClick(
+        onPieceClick={(pieceId) => {
+          const result = handlePieceClick(
             pieceId,
             String(player),
             currentTurn,
             setDiceValues,
             diceValues
-          )
-        }
+          );
+          if (result && !result.success) {
+            showNotification(result.message);
+          }
+        }}
         handlePieceHover={(pieceId, piecePos, lastKnownIndex) =>
           handlePieceHover(
             pieceId,
