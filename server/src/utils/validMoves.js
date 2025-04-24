@@ -10,10 +10,11 @@ import { routes } from "../utils/routes.js";
  * @returns {boolean} - True if the tile is not blocked, false otherwise.
  */
 export const isValidDestination = (coord, player) => {
-  const piecesOnTile = gameState[player].filter(
+  const playerPiecesAtCoord = gameState[player].filter(
     (p) => p.coord.row === coord.row && p.coord.col === coord.col
   );
-  return piecesOnTile.length < 2;
+
+  return playerPiecesAtCoord.length < 2;
 };
 
 /**

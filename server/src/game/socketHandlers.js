@@ -1,7 +1,8 @@
 import { gameState } from "../utils/gameState.js";
 import { routes } from "../utils/routes.js";
 import { getNextTurn, currentTurn } from "../utils/turnManager.js";
-import { rollDice, movePiece } from "./gameLogic.js";
+import { rollDice } from "./gameLogic.js";
+import { movePiece } from "./movePiece.js";
 import { hasValidMoves } from "../utils/validMoves.js";
 
 /**
@@ -38,7 +39,7 @@ export const handleGameEvents = (io) => {
      * and checks if the player has any valid moves.
      */
     socket.on("roll-dice", (player, callback) => {
-      const result = rollDice(player, currentTurn);
+      const result = rollDice(player, currentTurn, gameState);
       if (!result.success) return callback(result);
 
       // Update dice values in game state and reset played flags.
@@ -68,7 +69,7 @@ export const handleGameEvents = (io) => {
      * Marks dice as played based on the dice value used and switches turn when needed.
      */
     socket.on("piece-clicked", ({ pieceId, player, diceValue }, callback) => {
-      const moveResult = movePiece(player, pieceId, diceValue);
+      const moveResult = movePiece(player, pieceId, diceValue, routes);
       if (!moveResult.success) return callback(moveResult);
 
       // Calculate the sum of both dice.
