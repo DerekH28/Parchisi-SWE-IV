@@ -3,7 +3,10 @@
  * A destination is valid if there are fewer than 2 of the player's own pieces at the coordinate,
  * and if it's not a safe space occupied by another player's piece (unless leaving home).
  */
-export const isValidDestination = (coord, player, gameState, isLeavingHome = false) => {
+import { safeSpaces } from "../utils/safeSpaces.js";
+import { gameState } from "../utils/gameState.js";
+
+export const isValidDestination = (coord, player, isLeavingHome = false) => {
     const isSafe = safeSpaces.some(
         (space) => space.row === coord.row && space.col === coord.col
     );
