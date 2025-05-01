@@ -14,8 +14,6 @@ export const AuthProvider = ({ children }) => {
         data: { user },
       } = await supabase.auth.getUser();
       setUser(user);
-
-      if (user) navigate("/game");
     };
 
     checkUser();

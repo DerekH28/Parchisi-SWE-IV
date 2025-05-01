@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useSocket from "../hooks/useSocket";
 import useGameLogic from "../hooks/useGameLogic";
 import Board from "./Board";
@@ -8,6 +8,17 @@ const Game = () => {
   const [notification, setNotification] = useState(null);
   const { socket, player, diceValues, currentTurn, positions, setDiceValues } =
     useSocket();
+
+  // Add debugging useEffect
+  useEffect(() => {
+    console.log("Game component state:", {
+      player,
+      currentTurn,
+      positions,
+      diceValues,
+    });
+  }, [player, currentTurn, positions, diceValues]);
+
   const {
     handleDieSelect,
     handlePieceClick,
@@ -31,7 +42,10 @@ const Game = () => {
    * Handles rolling dice, ensuring only the current player can roll.
    */
   const rollDice = () => {
-    if (!player) return;
+    if (!player) {
+      showNotification("❌ You must be assigned a player color first!");
+      return;
+    }
     if (player !== currentTurn) {
       showNotification("❌ Not your turn to roll dice!");
       return;
@@ -43,12 +57,6 @@ const Game = () => {
       } else {
         setDiceValues(response.dice);
         resetDiceSelection();
-        
-        // Check if player has any valid moves
-        const hasValidMoves = checkForValidMoves(response.dice);
-        if (!hasValidMoves) {
-          showNotification("⚠️ No valid moves available with this roll!");
-        }
       }
     });
   };
@@ -65,12 +73,12 @@ const Game = () => {
     if (!path) return false;
 
     // Check if any piece can leave home (requires a 5)
-    const canLeaveHome = playerPieces.some(piece => {
+    const canLeaveHome = playerPieces.some((piece) => {
       if (!piece.inHome) return false;
-      
+
       // Check if any die value is 5
       const canLeaveWithIndividualDice = dice.includes(5);
-      
+
       // Check if sum of dice is 5
       const sumOfDice = dice.reduce((sum, die) => sum + die, 0);
       const canLeaveWithSum = sumOfDice === 5;
@@ -79,34 +87,35 @@ const Game = () => {
     });
 
     // Check if any piece on the board can move
-    const canMoveOnBoard = playerPieces.some(piece => {
+    const canMoveOnBoard = playerPieces.some((piece) => {
       if (piece.inHome) return false;
-      
+
       const currentIndex = piece.lastKnownIndex;
       if (currentIndex === undefined || currentIndex === -1) return false;
 
       // Check individual die values
-      const canMoveWithIndividualDice = dice.some(dieValue => {
+      const canMoveWithIndividualDice = dice.some((dieValue) => {
         const newIndex = currentIndex + dieValue;
         return newIndex < path.length && newIndex >= 0;
       });
 
       // Check sum of dice
       const sumOfDice = dice.reduce((sum, die) => sum + die, 0);
-      const canMoveWithSum = (currentIndex + sumOfDice) < path.length && (currentIndex + sumOfDice) >= 0;
+      const canMoveWithSum =
+        currentIndex + sumOfDice < path.length && currentIndex + sumOfDice >= 0;
 
       return canMoveWithIndividualDice || canMoveWithSum;
     });
 
     const hasValidMoves = canLeaveHome || canMoveOnBoard;
-    
+
     // Debug logging
-    console.log('Move validation:', {
+    console.log("Move validation:", {
       player,
       dice,
       canLeaveHome,
       canMoveOnBoard,
-      hasValidMoves
+      hasValidMoves,
     });
 
     return hasValidMoves;

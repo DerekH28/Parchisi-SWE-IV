@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
  * Menu Page - Main Navigation
  */
 const MenuPage = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-100">
@@ -14,10 +14,10 @@ const navigate = useNavigate();
         <h1 className="text-4xl font-bold mb-8">Main Menu</h1>
 
         <button
-          onClick={() => navigate("/GameOptions")}
+          onClick={() => navigate("/lobby")}
           className="w-full px-6 py-4 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition"
         >
-          Create / Join Game
+          Play Game
         </button>
 
         <button
