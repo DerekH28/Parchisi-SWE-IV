@@ -21,7 +21,7 @@ const MenuPage = () => {
         </button>
 
         <button
-          onClick={() => navigate("/Settings")}
+          onClick={() => navigate("/settings")}
           className="w-full px-6 py-4 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition mt-4"
         >
           Settings

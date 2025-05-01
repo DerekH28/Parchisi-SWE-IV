@@ -3,16 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import socket from "../socket";
 
-// Store the selected color in localStorage
-const storePlayerColor = (color) => {
-  localStorage.setItem("playerColor", color);
-};
-
-// Get the stored color
-const getStoredPlayerColor = () => {
-  return localStorage.getItem("playerColor");
-};
-
 const LobbyPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -156,10 +146,9 @@ const LobbyPage = () => {
             <h2 className="text-xl font-semibold mb-2">Players</h2>
             {[...players]
               .sort((a, b) => {
-                // Host always first
                 if (a.isHost) return -1;
                 if (b.isHost) return 1;
-                // Then sort by join order using socket ID
+
                 return a.id.localeCompare(b.id);
               })
               .map((player) => (

@@ -6,7 +6,6 @@ import { useAuth } from "../context/AuthProvider.jsx";
 import backgroundImage from "../assets/login_background_2.jpg";
 import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 
-
 const Login = () => {
   const { user } = useAuth();
   const [email, setEmail] = useState("");
@@ -15,7 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) navigate("/Menu");
+    if (user) navigate("/menu");
   }, [user, navigate]);
 
   const handleSignIn = async (e) => {
@@ -24,7 +23,7 @@ const Login = () => {
     if (error) {
       setMessage(error.message);
     } else {
-      navigate("/Menu");
+      navigate("/menu");
     }
   };
 
@@ -114,7 +113,9 @@ const Login = () => {
 
             {/* Right side - Sign Up */}
             <div className="w-1/2 bg-blue-100 p-8 flex flex-col justify-center items-center text-center">
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">Welcome to Login</h2>
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">
+                Welcome to Login
+              </h2>
               <p className="mb-6 text-gray-700">Don't have an account?</p>
               <a
                 href="/signup"
