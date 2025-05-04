@@ -29,7 +29,9 @@ const GameOptionsPage = () => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
     const { data, error } = await supabase
       .from("games")
-      .insert([{ code, host_user_id: supabase.auth.user().id, is_public: true }])
+      .insert([
+        { code, host_user_id: supabase.auth.user().id, is_public: true },
+      ])
       .select()
       .single();
 
@@ -59,7 +61,6 @@ const GameOptionsPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 space-y-4">
-
       <h1 className="text-3xl font-bold mb-4">Parcheesi - Multiplayer</h1>
 
       <button
@@ -95,8 +96,18 @@ const GameOptionsPage = () => {
               className="border rounded px-2 py-1"
             />
             <div className="space-x-2">
-              <button onClick={joinByCode} className="bg-green-500 px-4 py-2 text-white rounded">Join</button>
-              <button onClick={() => setShowJoinCodePopup(false)} className="bg-red-500 px-4 py-2 text-white rounded">Cancel</button>
+              <button
+                onClick={joinByCode}
+                className="bg-green-500 px-4 py-2 text-white rounded"
+              >
+                Join
+              </button>
+              <button
+                onClick={() => setShowJoinCodePopup(false)}
+                className="bg-red-500 px-4 py-2 text-white rounded"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
@@ -109,7 +120,10 @@ const GameOptionsPage = () => {
             <h2 className="text-xl font-semibold">Public Games</h2>
             {publicGames.length > 0 ? (
               publicGames.map((game) => (
-                <div key={game.id} className="flex justify-between items-center border-b py-2">
+                <div
+                  key={game.id}
+                  className="flex justify-between items-center border-b py-2"
+                >
                   <span>Code: {game.code}</span>
                   <button
                     onClick={() => navigate(`/game/${game.id}`)}
@@ -122,7 +136,12 @@ const GameOptionsPage = () => {
             ) : (
               <p>No public games available.</p>
             )}
-            <button onClick={() => setShowPublicLobbyPopup(false)} className="bg-red-500 px-4 py-2 text-white rounded">Close</button>
+            <button
+              onClick={() => setShowPublicLobbyPopup(false)}
+              className="bg-red-500 px-4 py-2 text-white rounded"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
