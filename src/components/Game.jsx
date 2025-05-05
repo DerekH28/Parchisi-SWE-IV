@@ -57,6 +57,16 @@ const Game = () => {
       } else {
         setDiceValues(response.dice);
         resetDiceSelection();
+
+        const hasMoves = checkForValidMoves(response.dice);
+      if (!hasMoves) {
+        showNotification("🚫 No valid moves! You forfeit your turn.");
+
+        // 👇 Delay 6 seconds then advance turn
+        setTimeout(() => {
+          socket.emit("end-turn", player); // Emit to server to change turn
+        }, 6000);
+      }
       }
     });
   };
@@ -71,6 +81,7 @@ const Game = () => {
     const path = routes[player]?.path;
 
     if (!path) return false;
+    
 
     // Check if any piece can leave home (requires a 5)
     const canLeaveHome = playerPieces.some((piece) => {
@@ -85,7 +96,7 @@ const Game = () => {
 
       return canLeaveWithIndividualDice || canLeaveWithSum;
     });
-
+    //TODO: check if blockade makes user lose turn
     // Check if any piece on the board can move
     const canMoveOnBoard = playerPieces.some((piece) => {
       if (piece.inHome) return false;
@@ -107,7 +118,9 @@ const Game = () => {
       return canMoveWithIndividualDice || canMoveWithSum;
     });
 
-    const hasValidMoves = canLeaveHome || canMoveOnBoard;
+    
+
+    const hasValidMoves = (canLeaveHome || canMoveOnBoard); //&& !isBlockedByOpponent;
 
     // Debug logging
     console.log("Move validation:", {
