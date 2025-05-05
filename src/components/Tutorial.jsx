@@ -14,9 +14,15 @@ const tutorialSteps = [
     content:
       "The objective in Parcheesi is to get all of your pieces into your corresponding color's home base, which is highlighted to the side. You must land exactly on the finish space to get in.",
     highlights: [
+      {row: 6, col: 6},
       { row: 6, col: 7 },
+      { row: 6, col: 8 },
       { row: 7, col: 7 },
+      { row: 7, col: 6 },
+      { row: 7, col: 8 },
+      { row: 8, col: 6 },
       { row: 8, col: 7 },
+      { row: 8, col: 8 },
     ],
   },
   {
@@ -25,34 +31,43 @@ const tutorialSteps = [
       "Highlighted below are safe spaces. If you land on a safe space your piece cannot be taken by an opponent. You cannot move onto a safe space if it's occupied.",
     highlights: [
       { row: 0, col: 7 },
+      { row: 3, col: 8 },
+      { row: 3, col: 6 },
+      {row: 7, col: 14},
       { row: 7, col: 0 },
+      {row: 8, col: 3},
+      {row: 6,  col: 3},
+      {row: 11, col: 8},
+      {row: 11, col: 6},
       { row: 14, col: 7 },
-      { row: 7, col: 14 },
+      { row: 6, col: 11 },
+      { row: 8, col: 11 },
+
     ],
   },
   {
     title: "Your Turn",
     content:
-      "Now let's play a turn! When you're ready, click **Roll Dice** (button below the board).",
+      "Now let's play a turn! When you’re ready, click Roll Dice (button below the board).",
     highlights: [],
   },
   {
     title: "Movement",
     content:
-      "Below is the board when it's your turn. Highlighted in pink is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click that highlighted space to move your piece out of home.",
+      "Below is the board when it’s your turn. Highlighted in yellow is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click that highlighted space to move your piece out of home.",
     highlights: [{ row: 3, col: 6 }],
   },
   {
     title: "Blockade",
     content:
       "After moving out of home you have two pieces in one space! That creates a blockade—no piece can pass it. Click the highlighted space to form your blockade.",
-    highlights: [{ row: 8, col: 8 }],
+    highlights: [{ row: 3, col: 6 }],
   },
   {
     title: "Breaking Blockade",
     content:
       "You rolled a 6! A 6 forces you to break up your blockade and move one piece in the blockade 6 spaces. Click the highlighted space to break it.",
-    highlights: [{ row: 5, col: 5 }],
+    highlights: [{ row: 6, col: 2 }],
   },
 ];
 

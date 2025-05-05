@@ -7,28 +7,28 @@ import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 
 const initialPiecePositions = {
   red: [
-    { coord: { row: 1, col: 1 } },
-    { coord: { row: 1, col: 4 } },
+    { coord: { row: 2, col: 3 } },
+    { coord: { row: 3, col: 3 } },
     { coord: { row: 3, col: 2 } },
-    { coord: { row: 4, col: 1 } },
+    { coord: { row: 2, col: 2} },
   ],
   blue: [
-    { coord: { row: 1, col: 13 } },
-    { coord: { row: 1, col: 11 } },
+    { coord: { row: 2, col: 11 } },
+    { coord: { row: 3, col: 11 } },
     { coord: { row: 3, col: 12 } },
-    { coord: { row: 4, col: 13 } },
+    { coord: { row: 2, col: 12 } },
   ],
   yellow: [
-    { coord: { row: 10, col: 1 } },
-    { coord: { row: 11, col: 4 } },
+    { coord: { row: 11, col: 2 } },
+    { coord: { row: 11, col: 3 } },
     { coord: { row: 12, col: 2 } },
-    { coord: { row: 13, col: 1 } },
+    { coord: { row: 12, col: 3 } },
   ],
   green: [
-    { coord: { row: 10, col: 13 } },
     { coord: { row: 11, col: 12 } },
+    { coord: { row: 11, col: 11 } },
     { coord: { row: 12, col: 11 } },
-    { coord: { row: 13, col: 13 } },
+    { coord: { row: 12, col: 12 } },
   ],
 };
 
