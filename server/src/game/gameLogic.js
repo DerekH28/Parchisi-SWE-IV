@@ -83,3 +83,27 @@ export const captureOpponentAt = (coord, player) => {
 export const isSafeSpace = (row, col) => {
   return safeSpaces.some((spot) => spot.row === row && spot.col === col);
 };
+
+/**
+ * Checks if a coordinate is a safe space occupied by an opponent
+ */
+export const isOpponentOnSafeSpace = (coord, player) => {
+  if (!isSafeSpace(coord.row, coord.col)) return false;
+
+  const opponentColors = Object.keys(gameState).filter(
+    (color) => color !== player && Array.isArray(gameState[color])
+  );
+
+  for (const color of opponentColors) {
+    const piecesAtCoord = gameState[color].filter(
+      (p) =>
+        p.coord &&
+        p.coord.row === coord.row &&
+        p.coord.col === coord.col
+    );
+
+    if (piecesAtCoord.length > 0) return true;
+  }
+
+  return false;
+};

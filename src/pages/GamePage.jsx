@@ -4,8 +4,7 @@ import { useAuth } from "../context/AuthProvider.jsx";
 import { signOut } from "../api/auth";
 import Game from "../components/Game";
 
-//TODO: create each of the 4 profiles in the 4 corners
-//make each of them their own components, i.e. profile image components
+//TODO: Create win state
 
 /**
  * Renders the Game page.
@@ -31,15 +30,17 @@ const GamePage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-gray-100 dark:bg-gray-900">
-      <h1 className="mb-6 text-3xl font-bold">Parcheesi Board</h1>
-      <Game />
+    <div className="relative w-screen min-h-screen bg-gray-100 dark:bg-gray-900">
       <button
         onClick={handleSignOut}
-        className="mt-4 px-4 py-2 bg-red-600 text-white rounded"
+        className="absolute top-4 right-4 px-4 py-2 bg-red-600 text-white rounded"
       >
         Sign Out
       </button>
+      <div className="flex flex-col items-center justify-center">
+        <h1 className="mb-6 text-3xl font-bold">Parcheesi Board</h1>
+        <Game />
+      </div>
     </div>
   );
 };
