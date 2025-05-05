@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import Board from "../components/Board";
 import Tutorial from "../components/Tutorial";
 import { routes } from "../util/routes";
+import backgroundImage from "../assets/parcheesi_background.jpg";
+import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 
-// 1) EXACT initial positions per your first tutorial image:
 const initialPiecePositions = {
   red: [
     { coord: { row: 1, col: 1 } },
@@ -36,13 +37,10 @@ export default function TutorialPage() {
   const [highlightedCells, setHighlightedCells] = useState([]);
   const [piecePositions, setPiecePositions] = useState(initialPiecePositions);
 
-  // Advance from “Your Turn” step to movement step
   const onRollClick = () => setStep((s) => s + 1);
 
-  // Handle clicking exactly the one correct highlighted cell
   const handleBoardClick = (r, c) => {
     if (step === 4 && r === 3 && c === 6) {
-      // Move red piece out of home to the “5” space
       setPiecePositions((pos) => {
         const red = pos.red.map((p, i) =>
           i === 3 ? { coord: { row: 7, col: 6 } } : p
@@ -51,7 +49,6 @@ export default function TutorialPage() {
       });
       setStep(5);
     } else if (step === 5 && r === 8 && c === 8) {
-      // Create blockade (move a green piece into blockade)
       setPiecePositions((pos) => {
         const green = pos.green.map((p, i) =>
           i === 1 ? { coord: { row: 8, col: 8 } } : p
@@ -60,7 +57,6 @@ export default function TutorialPage() {
       });
       setStep(6);
     } else if (step === 6 && r === 5 && c === 5) {
-      // Break blockade (move green piece 6 spaces)
       setPiecePositions((pos) => {
         const green = pos.green.map((p, i) =>
           i === 1 ? { coord: { row: 5, col: 5 } } : p
@@ -72,42 +68,45 @@ export default function TutorialPage() {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-gray-100 p-8">
-      {/* BOARD + under-board Roll Dice button */}
-      <div className="flex flex-col items-center">
-        <Board
-          piecePositions={piecePositions}
-          routes={routes}
-          onPieceClick={() => {}}
-          handlePieceHover={() => {}}
-          handlePieceLeave={() => {}}
-          highlightedCells={highlightedCells}
-          hoveredPiece={null}
-          currentPlayer={null}
-          onCellClick={handleBoardClick}
-        />
-        {step === 3 && (
-          <button
-            onClick={onRollClick}
-            className="mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg shadow-lg"
-          >
-            Roll Dice
-          </button>
-        )}
+    <div
+      className="min-h-screen bg-cover bg-center flex flex-col items-center"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      <div className="mt-6 mb-4">
+        <ParcheesiHeader />
       </div>
 
-      {/* TUTORIAL PANEL on the right */}
-      <div className="ml-8">
-        <Tutorial
-          step={step}
-          setStep={setStep}
-          setHighlight={setHighlightedCells}
-        />
+      <div className="flex flex-1 items-center justify-center w-full px-8 py-12">
+        <div className="flex flex-col items-center">
+          <Board
+            piecePositions={piecePositions}
+            routes={routes}
+            onPieceClick={() => {}}
+            handlePieceHover={() => {}}
+            handlePieceLeave={() => {}}
+            highlightedCells={highlightedCells}
+            hoveredPiece={null}
+            currentPlayer={null}
+            onCellClick={handleBoardClick}
+          />
+          {step === 3 && (
+            <button
+              onClick={onRollClick}
+              className="mt-6 px-6 py-3 bg-[#A3DEE7] text-black rounded-lg shadow-lg hover:brightness-95 transition"
+            >
+              Roll Dice
+            </button>
+          )}
+        </div>
+
+        <div className="ml-12">
+          <Tutorial
+            step={step}
+            setStep={setStep}
+            setHighlight={setHighlightedCells}
+          />
+        </div>
       </div>
     </div>
   );
 }
-
-
-
-

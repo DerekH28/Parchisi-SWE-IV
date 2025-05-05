@@ -27,6 +27,12 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px #CFEDE8 inset !important;
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

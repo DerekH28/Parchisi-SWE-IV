@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider.jsx";
 import { signOut } from "../api/auth";
 import Game from "../components/Game";
+import backgroundImage from "../assets/parcheesi_background.jpg";
 
 //TODO: Create win state
 
@@ -30,10 +31,17 @@ const GamePage = () => {
   };
 
   return (
-    <div className="relative w-screen min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div
+      className="flex flex-col items-center justify-center w-screen min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      {/* Game Component */}
+      <Game handleSignOut={handleSignOut} />
+
+      {/* Sign Out Button */}
       <button
         onClick={handleSignOut}
-        className="absolute top-4 right-4 px-4 py-2 bg-red-600 text-white rounded"
+        className="fixed top-4 right-6 px-4 py-2 bg-[#CFEDE8] text-black rounded hover:brightness-95 transition z-50"
       >
         Sign Out
       </button>

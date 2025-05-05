@@ -12,7 +12,7 @@ const tutorialSteps = [
   {
     title: "Objective",
     content:
-      "The Objective in Parcheesi is to get all of your pieces into your corresponding color’s home base, which is highlighted to the side. You must land exactly on the finish space to get in.",
+      "The objective in Parcheesi is to get all of your pieces into your corresponding color’s home base, which is highlighted to the side. You must land exactly on the finish space to get in.",
     highlights: [
       { row: 6, col: 7 },
       { row: 7, col: 7 },
@@ -60,24 +60,22 @@ export default function Tutorial({ step, setStep, setHighlight }) {
   const navigate = useNavigate();
   const maxStep = tutorialSteps.length;
 
-  // Update highlights whenever step changes
   useEffect(() => {
     if (step >= 0 && step < maxStep) {
       setHighlight(tutorialSteps[step].highlights);
     }
   }, [step, setHighlight]);
 
-  // Out-of-range: render nothing
   if (step < 0 || step > maxStep) return null;
 
   // Final “Tutorial Complete” screen
   if (step === maxStep) {
     return (
-      <div className="w-80 bg-white p-6 rounded-lg shadow-lg h-auto">
+      <div className="w-80 bg-[#D8F8F3] p-6 shadow-lg h-auto">
         <h2 className="text-2xl font-bold mb-4">Tutorial Complete!</h2>
         <button
           onClick={() => navigate("/Menu")}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
+          className="px-4 py-2 bg-[#A3DEE7] text-black rounded-full hover:brightness-95 transition"
         >
           Return to Menu
         </button>
@@ -85,19 +83,18 @@ export default function Tutorial({ step, setStep, setHighlight }) {
     );
   }
 
-  // A real tutorial step
   const { title, content } = tutorialSteps[step];
   const isRollStep = step === 3;
 
   return (
-    <div className="w-80 bg-cyan-100 p-6 rounded-lg shadow-lg h-auto max-h-full overflow-auto">
+    <div className="w-80 bg-[#D8F8F3] p-6 shadow-lg h-auto max-h-full overflow-auto">
       <h2 className="text-xl font-bold mb-2 border-b pb-1">{title}</h2>
       <div className="whitespace-pre-wrap mb-6">{content}</div>
 
       <div className="flex justify-between">
         <button
           onClick={() => navigate("/Menu")}
-          className="px-3 py-1 bg-white border rounded"
+          className="px-4 py-1 bg-[#CFEDE8] rounded-full hover:brightness-95 transition"
         >
           EXIT
         </button>
@@ -106,7 +103,7 @@ export default function Tutorial({ step, setStep, setHighlight }) {
         {!isRollStep && (
           <button
             onClick={() => setStep((s) => s + 1)}
-            className="px-3 py-1 bg-cyan-300 text-white rounded"
+            className="px-4 py-1 bg-[#A3DEE7] text-black rounded-full hover:brightness-95 transition"
           >
             NEXT
           </button>
@@ -115,7 +112,3 @@ export default function Tutorial({ step, setStep, setHighlight }) {
     </div>
   );
 }
-
-
-
-

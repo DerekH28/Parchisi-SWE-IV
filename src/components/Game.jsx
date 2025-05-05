@@ -3,6 +3,7 @@ import useSocket from "../hooks/useSocket";
 import useGameLogic from "../hooks/useGameLogic";
 import Board from "./Board";
 import { routes } from "../util/routes";
+import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 
 const Game = () => {
   const [notification, setNotification] = useState(null);
@@ -58,15 +59,11 @@ const Game = () => {
         setDiceValues(response.dice);
         resetDiceSelection();
 
-        const hasMoves = checkForValidMoves(response.dice);
-      if (!hasMoves) {
-        showNotification("🚫 No valid moves! You forfeit your turn.");
-
-        // 👇 Delay 6 seconds then advance turn
-        setTimeout(() => {
-          socket.emit("end-turn", player); // Emit to server to change turn
-        }, 6000);
-      }
+        // Check if player has any valid moves
+        const hasValidMoves = checkForValidMoves(response.dice);
+        if (!hasValidMoves) {
+          showNotification("⚠️ No valid moves available with this roll!");
+        }
       }
     });
   };
@@ -81,7 +78,6 @@ const Game = () => {
     const path = routes[player]?.path;
 
     if (!path) return false;
-    
 
     // Check if any piece can leave home (requires a 5)
     const canLeaveHome = playerPieces.some((piece) => {
@@ -96,7 +92,7 @@ const Game = () => {
 
       return canLeaveWithIndividualDice || canLeaveWithSum;
     });
-    //TODO: check if blockade makes user lose turn
+
     // Check if any piece on the board can move
     const canMoveOnBoard = playerPieces.some((piece) => {
       if (piece.inHome) return false;
@@ -118,9 +114,7 @@ const Game = () => {
       return canMoveWithIndividualDice || canMoveWithSum;
     });
 
-    
-
-    const hasValidMoves = (canLeaveHome || canMoveOnBoard); //&& !isBlockedByOpponent;
+    const hasValidMoves = canLeaveHome || canMoveOnBoard;
 
     // Debug logging
     console.log("Move validation:", {
@@ -136,6 +130,9 @@ const Game = () => {
 
   return (
     <div className="flex flex-col items-center">
+      <div className="mt-6 mb-2">
+        <ParcheesiHeader />
+      </div>
       {notification && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out">
@@ -144,12 +141,12 @@ const Game = () => {
         </div>
       )}
 
-      <h2 className="mb-4 text-xl font-bold">
+      <h2 className="mt-12 text-3xl font-bold text-white">
         {player
           ? `You are Player: ${String(player).toUpperCase()}`
           : "Waiting for player assignment..."}
       </h2>
-      <p className="mb-2">
+      <p className="mb-2 text-white">
         {currentTurn
           ? `It is ${String(currentTurn).toUpperCase()}'s turn.`
           : "Waiting for turn information..."}
@@ -188,8 +185,8 @@ const Game = () => {
 
       <button
         onClick={rollDice}
-        className={`px-4 py-2 mt-4 text-white rounded ${
-          player === currentTurn ? "bg-blue-500" : "bg-gray-500"
+        className={`px-4 py-2 mt-2 text-black font-bold rounded ${
+          player === currentTurn ? "bg-[#A3DEE7]" : "bg-gray-500"
         }`}
       >
         Roll Dice
