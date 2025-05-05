@@ -5,8 +5,7 @@ import { signOut } from "../api/auth";
 import Game from "../components/Game";
 import backgroundImage from "../assets/parcheesi_background.jpg";
 
-//TODO: create each of the 4 profiles in the 4 corners
-//make each of them their own components, i.e. profile image components
+//TODO: Create win state
 
 /**
  * Renders the Game page.
@@ -46,6 +45,10 @@ const GamePage = () => {
       >
         Sign Out
       </button>
+      <div className="flex flex-col items-center justify-center">
+        <h1 className="mb-6 text-3xl font-bold">Parcheesi Board</h1>
+        <Game />
+      </div>
     </div>
   );
 };

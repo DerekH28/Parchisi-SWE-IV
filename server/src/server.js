@@ -7,6 +7,9 @@ import { handleGameEvents } from "./game/socketHandlers.js";
 /** Initialize the Express app */
 const app = express();
 
+/** Enable CORS */
+app.use(cors());
+
 /** Create an HTTP server to work with WebSockets */
 const server = createServer(app);
 
@@ -21,5 +24,8 @@ const io = new Server(server, {
 /** Attach game event handlers to the WebSocket server */
 handleGameEvents(io);
 
-/** Start the server on port 4000 */
-server.listen(4000, () => console.log("✅ Server running on port 4000"));
+/** Start the server */
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

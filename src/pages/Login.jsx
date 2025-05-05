@@ -14,7 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) navigate("/Menu");
+    if (user) navigate("/menu");
   }, [user, navigate]);
 
   const handleSignIn = async (e) => {
@@ -23,7 +23,7 @@ const Login = () => {
     if (error) {
       setMessage(error.message);
     } else {
-      navigate("/Menu");
+      navigate("/menu");
     }
   };
 
