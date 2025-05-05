@@ -41,8 +41,11 @@ const MenuPage = () => {
             <button
               onClick={() => navigate("/lobby")}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               className="w-full px-4 py-3 text-black bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
 =======
+=======
+>>>>>>> Stashed changes
               className="w-68 mx-auto px-4 py-3 bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-semibold"
 >>>>>>> Stashed changes
             >

@@ -49,7 +49,11 @@ const tutorialSteps = [
     title: "Your Turn",
     content:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "Now let's play a turn! When you're ready, click **Roll Dice** (button below the board).",
+=======
+      "Now let's play a turn! When you’re ready, click Roll Dice (button below the board).",
+>>>>>>> Stashed changes
 =======
       "Now let's play a turn! When you’re ready, click Roll Dice (button below the board).",
 >>>>>>> Stashed changes
@@ -59,7 +63,11 @@ const tutorialSteps = [
     title: "Movement",
     content:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "Below is the board when it's your turn. Highlighted in pink is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click that highlighted space to move your piece out of home.",
+=======
+      "Below is the board when it’s your turn. Highlighted in yellow is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click that highlighted space to move your piece out of home.",
+>>>>>>> Stashed changes
 =======
       "Below is the board when it’s your turn. Highlighted in yellow is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click that highlighted space to move your piece out of home.",
 >>>>>>> Stashed changes
