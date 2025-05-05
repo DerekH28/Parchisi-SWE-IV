@@ -77,7 +77,7 @@ export default function Tutorial({ step, setStep, setHighlight, onExit }) {
           onClick={onExit ? onExit : () => navigate("/Menu")}
           className="px-4 py-2 bg-[#A3DEE7] text-black rounded-full hover:brightness-95 transition"
         >
-          Return to Menu
+          Exit Tutorial
         </button>
       </div>
     );
