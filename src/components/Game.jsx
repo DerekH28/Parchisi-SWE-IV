@@ -78,17 +78,13 @@ const Game = () => {
     const path = routes[player]?.path;
 
     if (!path) return false;
-    
 
     // Check if any piece can leave home (requires a 5)
     const canLeaveHome = playerPieces.some((piece) => {
-    const canLeaveHome = playerPieces.some((piece) => {
       if (!piece.inHome) return false;
-
 
       // Check if any die value is 5
       const canLeaveWithIndividualDice = dice.includes(5);
-
 
       // Check if sum of dice is 5
       const sumOfDice = dice.reduce((sum, die) => sum + die, 0);
@@ -96,9 +92,8 @@ const Game = () => {
 
       return canLeaveWithIndividualDice || canLeaveWithSum;
     });
-    //TODO: check if blockade makes user lose turn
+
     // Check if any piece on the board can move
-    const canMoveOnBoard = playerPieces.some((piece) => {
     const canMoveOnBoard = playerPieces.some((piece) => {
       if (piece.inHome) return false;
 
@@ -107,15 +102,12 @@ const Game = () => {
 
       // Check individual die values
       const canMoveWithIndividualDice = dice.some((dieValue) => {
-      const canMoveWithIndividualDice = dice.some((dieValue) => {
         const newIndex = currentIndex + dieValue;
         return newIndex < path.length && newIndex >= 0;
       });
 
       // Check sum of dice
       const sumOfDice = dice.reduce((sum, die) => sum + die, 0);
-      const canMoveWithSum =
-        currentIndex + sumOfDice < path.length && currentIndex + sumOfDice >= 0;
       const canMoveWithSum =
         currentIndex + sumOfDice < path.length && currentIndex + sumOfDice >= 0;
 
@@ -126,12 +118,10 @@ const Game = () => {
 
     // Debug logging
     console.log("Move validation:", {
-    console.log("Move validation:", {
       player,
       dice,
       canLeaveHome,
       canMoveOnBoard,
-      hasValidMoves,
       hasValidMoves,
     });
 

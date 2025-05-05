@@ -39,26 +39,7 @@ const Settings = () => {
             Accessibility Settings
           </h1>
 
-    <div className="fixed inset-0 bg-gray-100 overflow-auto">
-      {/* Exit button */}
-      <button
-        onClick={() => navigate("/menu")}
-        className="absolute top-4 left-4 px-3 py-1 bg-white border border-gray-400 rounded shadow"
-      >
-        EXIT
-      </button>
-
-      {/* Centered content wrapper */}
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg p-6 shadow-md w-full max-w-md">
-          <h1 className="text-3xl font-bold mb-6 text-center">
-            Accessibility Settings
-          </h1>
           <div className="w-full">
-            <label
-              htmlFor="color-mode"
-              className="block text-lg font-medium text-gray-700 mb-2"
-            >
             <label
               htmlFor="color-mode"
               className="block text-lg font-medium text-gray-700 mb-2"
@@ -78,6 +59,13 @@ const Settings = () => {
               ))}
             </select>
           </div>
+
+          <button
+            onClick={() => navigate("/menu")}
+            className="mt-6 px-4 py-2 bg-white border border-gray-400 rounded shadow"
+          >
+            EXIT
+          </button>
         </div>
       </div>
     </div>
