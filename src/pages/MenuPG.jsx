@@ -25,7 +25,7 @@ const MenuPage = () => {
 
       {/* Title */}
       <h1 className="text-white text-center text-3xl font-semibold absolute top-20 left-1/2 transform -translate-x-1/2 z-20">
-        Welcome, {userEmail}!
+        Welcome, {userEmail?.split("@")[0]}!
       </h1>
 
       {/* Menu box */}
