@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, signInWithGoogle } from "../api/auth";
 import { useAuth } from "../context/AuthProvider.jsx";
-import backgroundImage from "../assets/login_background_2.jpg";
+import backgroundImage from "../assets/parcheesi_background.jpg";
 import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 
 const Login = () => {
