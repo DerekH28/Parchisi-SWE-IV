@@ -39,28 +39,28 @@ const MenuPage = () => {
           <div className="flex flex-col space-y-10 mt-8">
             <button
               onClick={() => navigate("/lobby")}
-              className="w-full px-4 py-3 text-black bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
+              className="w-full px-4 py-3 text-black bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-bold shadow-sm"
             >
               Start New Game
             </button>
 
             <button
               onClick={() => navigate("/stats")}
-              className="w-full px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
+              className="w-full px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition shadow-sm"
             >
               My Stats
             </button>
 
             <button
               onClick={() => navigate("/tutorial")}
-              className="w-full px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
+              className="w-full px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition shadow-sm"
             >
               View Tutorial
             </button>
 
             <button
               onClick={() => navigate("/Settings")}
-              className="w-full px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
+              className="w-full px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition shadow-sm"
             >
               Settings
             </button>
