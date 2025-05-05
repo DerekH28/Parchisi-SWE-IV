@@ -40,28 +40,28 @@ const MenuPage = () => {
           <div className="flex flex-col space-y-10">
             <button
               onClick={() => navigate("/lobby")}
-              className="w-68 mx-auto px-4 py-3 bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-semibold"
+              className="w-68 mx-auto px-4 py-3 text-black bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-semibold"
             >
               Start New Game
             </button>
 
             <button
               onClick={() => navigate("/stats")}
-              className="w-68 mx-auto px-4 py-3 bg-[#cfede8] rounded-full hover:brightness-95 transition font-semibold"
+              className="w-68 mx-auto px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition font-semibold"
             >
               My Stats
             </button>
 
             <button
               onClick={() => navigate("/tutorial")}
-              className="w-68 mx-auto px-4 py-3 bg-[#cfede8] rounded-full hover:brightness-95 transition font-semibold"
+              className="w-68 mx-auto px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition font-semibold"
             >
               View Tutorial
             </button>
 
             <button
               onClick={() => navigate("/Settings")}
-              className="w-68 mx-auto px-4 py-3 bg-[#cfede8] rounded-full hover:brightness-95 transition font-semibold"
+              className="w-68 mx-auto px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition font-semibold"
             >
               Settings
             </button>
