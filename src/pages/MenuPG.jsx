@@ -39,7 +39,7 @@ const MenuPage = () => {
           {/* Menu options */}
           <div className="flex flex-col space-y-10">
             <button
-              onClick={() => navigate("/GameOptions")}
+              onClick={() => navigate("/lobby")}
               className="w-68 mx-auto px-4 py-3 bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-semibold"
             >
               Start New Game
