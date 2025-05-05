@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider.jsx";
 import { signOut } from "../api/auth";
 import Game from "../components/Game";
 import backgroundImage from "../assets/parcheesi_background.jpg";
+import TutorialModal from "../components/TutorialModal";
 
 //TODO: Create win state
 
@@ -13,6 +14,9 @@ import backgroundImage from "../assets/parcheesi_background.jpg";
 const GamePage = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
+  const [highlightedCells, setHighlightedCells] = useState([]);
 
   useEffect(() => {
     if (!user) {
@@ -45,6 +49,17 @@ const GamePage = () => {
       >
         Sign Out
       </button>
+      {/* Tutorial Button */}
+      <button
+        onClick={() => setShowTutorial(true)}
+        className="fixed top-4 right-36 px-4 py-2 bg-[#A3DEE7] text-black rounded hover:brightness-95 transition z-50"
+      >
+        Tutorial
+      </button>
+      {/* Tutorial Modal */}
+      {showTutorial && (
+        <TutorialModal onClose={() => setShowTutorial(false)} />
+      )}
     </div>
   );
 };

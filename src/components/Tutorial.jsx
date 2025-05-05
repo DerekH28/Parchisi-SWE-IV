@@ -12,7 +12,7 @@ const tutorialSteps = [
   {
     title: "Objective",
     content:
-      "The objective in Parcheesi is to get all of your pieces into your corresponding color’s home base, which is highlighted to the side. You must land exactly on the finish space to get in.",
+      "The objective in Parcheesi is to get all of your pieces into your corresponding color's home base, which is highlighted to the side. You must land exactly on the finish space to get in.",
     highlights: [
       { row: 6, col: 7 },
       { row: 7, col: 7 },
@@ -22,7 +22,7 @@ const tutorialSteps = [
   {
     title: "Safe Spaces",
     content:
-      "Highlighted below are safe spaces. If you land on a safe space your piece cannot be taken by an opponent. You cannot move onto a safe space if it’s occupied.",
+      "Highlighted below are safe spaces. If you land on a safe space your piece cannot be taken by an opponent. You cannot move onto a safe space if it's occupied.",
     highlights: [
       { row: 0, col: 7 },
       { row: 7, col: 0 },
@@ -33,13 +33,13 @@ const tutorialSteps = [
   {
     title: "Your Turn",
     content:
-      "Now let's play a turn! When you’re ready, click **Roll Dice** (button below the board).",
+      "Now let's play a turn! When you're ready, click **Roll Dice** (button below the board).",
     highlights: [],
   },
   {
     title: "Movement",
     content:
-      "Below is the board when it’s your turn. Highlighted in pink is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click that highlighted space to move your piece out of home.",
+      "Below is the board when it's your turn. Highlighted in pink is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click that highlighted space to move your piece out of home.",
     highlights: [{ row: 3, col: 6 }],
   },
   {
@@ -56,7 +56,7 @@ const tutorialSteps = [
   },
 ];
 
-export default function Tutorial({ step, setStep, setHighlight }) {
+export default function Tutorial({ step, setStep, setHighlight, onExit }) {
   const navigate = useNavigate();
   const maxStep = tutorialSteps.length;
 
@@ -68,13 +68,13 @@ export default function Tutorial({ step, setStep, setHighlight }) {
 
   if (step < 0 || step > maxStep) return null;
 
-  // Final “Tutorial Complete” screen
+  // Final "Tutorial Complete" screen
   if (step === maxStep) {
     return (
       <div className="w-80 bg-[#D8F8F3] p-6 shadow-lg h-auto">
         <h2 className="text-2xl font-bold mb-4">Tutorial Complete!</h2>
         <button
-          onClick={() => navigate("/Menu")}
+          onClick={onExit ? onExit : () => navigate("/Menu")}
           className="px-4 py-2 bg-[#A3DEE7] text-black rounded-full hover:brightness-95 transition"
         >
           Return to Menu
@@ -87,19 +87,19 @@ export default function Tutorial({ step, setStep, setHighlight }) {
   const isRollStep = step === 3;
 
   return (
-    <div className="w-80 bg-[#D8F8F3] p-6 shadow-lg h-auto max-h-full overflow-auto">
+    <div className="w-80 bg-white p-6 shadow-lg h-auto max-h-full overflow-auto">
       <h2 className="text-xl font-bold mb-2 border-b pb-1">{title}</h2>
       <div className="whitespace-pre-wrap mb-6">{content}</div>
 
       <div className="flex justify-between">
         <button
-          onClick={() => navigate("/Menu")}
+          onClick={onExit ? onExit : () => navigate("/Menu")}
           className="px-4 py-1 bg-[#CFEDE8] rounded-full hover:brightness-95 transition"
         >
           EXIT
         </button>
 
-        {/* No “NEXT” on the Roll Dice step */}
+        {/* No "NEXT" on the Roll Dice step */}
         {!isRollStep && (
           <button
             onClick={() => setStep((s) => s + 1)}
