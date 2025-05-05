@@ -40,7 +40,11 @@ const MenuPage = () => {
           <div className="flex flex-col space-y-10 mt-8">
             <button
               onClick={() => navigate("/lobby")}
+<<<<<<< Updated upstream
               className="w-full px-4 py-3 text-black bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
+=======
+              className="w-68 mx-auto px-4 py-3 bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-semibold"
+>>>>>>> Stashed changes
             >
               Start New Game
             </button>

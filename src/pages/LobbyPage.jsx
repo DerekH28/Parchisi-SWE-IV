@@ -15,11 +15,7 @@ const LobbyPage = () => {
   const [isHost, setIsHost] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
+
 
   useEffect(() => {
     const handleLobbyUpdated = (lobbyData) => {
