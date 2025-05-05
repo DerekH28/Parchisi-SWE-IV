@@ -114,12 +114,6 @@ const LobbyPage = () => {
           )}
           {!lobbyCode ? (
             <div className="flex flex-col space-y-8 mt-10">
-              <button
-                onClick={createLobby}
-                className="w-full px-4 py-3 text-black bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
-              >
-                Create New Lobby
-              </button>
               <input
                 type="text"
                 placeholder="Enter Lobby Code"
@@ -133,6 +127,12 @@ const LobbyPage = () => {
                 className="w-full px-4 py-3 text-black bg-white rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
               >
                 Join Lobby
+              </button>
+              <button
+                onClick={createLobby}
+                className="w-full px-4 py-3 text-black bg-[#A3DEE7] rounded-full hover:brightness-95 transition font-bold border border-[#42aaca] shadow-sm"
+              >
+                Create New Lobby
               </button>
             </div>
           ) : (
