@@ -4,16 +4,30 @@ import { Server } from "socket.io";
 import cors from "cors";
 import { handleGameEvents } from "./game/socketHandlers.js";
 
-/** Initialize the Express app */
+/**
+ * Express application instance
+ * @type {import('express').Application}
+ */
 const app = express();
 
-/** Enable CORS */
+/**
+ * Enable Cross-Origin Resource Sharing (CORS)
+ * Allows requests from the frontend application
+ */
 app.use(cors());
 
-/** Create an HTTP server to work with WebSockets */
+/**
+ * HTTP server instance
+ * Required for WebSocket functionality
+ * @type {import('http').Server}
+ */
 const server = createServer(app);
 
-/** Initialize Socket.io with CORS configuration */
+/**
+ * Socket.io server instance
+ * Configured with CORS to allow connections from the frontend
+ * @type {import('socket.io').Server}
+ */
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
@@ -21,10 +35,16 @@ const io = new Server(server, {
   },
 });
 
-/** Attach game event handlers to the WebSocket server */
+/**
+ * Initialize game event handlers
+ * Attaches all socket event listeners for game functionality
+ */
 handleGameEvents(io);
 
-/** Start the server */
+/**
+ * Start the server
+ * Listens on the specified port or defaults to 4000
+ */
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

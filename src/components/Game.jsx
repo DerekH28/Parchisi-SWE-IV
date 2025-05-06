@@ -6,6 +6,16 @@ import { routes } from "../util/routes";
 import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 import Dice from "./Dice";
 
+/**
+ * Main game component that manages the game state and user interactions
+ * Handles:
+ * - Player turns and dice rolling
+ * - Piece movement
+ * - Win condition checking
+ * - Game notifications
+ *
+ * @returns {JSX.Element} The game interface with board, dice, and controls
+ */
 const Game = () => {
   const [notification, setNotification] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
@@ -49,6 +59,7 @@ const Game = () => {
 
   /**
    * Shows a notification message that automatically disappears after 3 seconds
+   * @param {string} message - The notification message to display
    */
   const showNotification = (message) => {
     setNotification(message);
@@ -56,7 +67,8 @@ const Game = () => {
   };
 
   /**
-   * Handles rolling dice, ensuring only the current player can roll.
+   * Handles rolling dice, ensuring only the current player can roll
+   * Checks for valid moves after rolling
    */
   const rollDice = () => {
     if (!player) {
@@ -89,6 +101,13 @@ const Game = () => {
 
   /**
    * Checks if the player has any valid moves with the current dice roll
+   * Validates:
+   * - Leaving home (requires a 5)
+   * - Moving pieces on the board
+   * - Using individual dice or sum of dice
+   *
+   * @param {number[]} dice - Array of dice values
+   * @returns {boolean} Whether the player has any valid moves
    */
   const checkForValidMoves = (dice) => {
     if (!player || !positions[player]) return false;
@@ -161,8 +180,10 @@ const Game = () => {
       )}
 
       {winner && (
-        <div       className="fixed inset-0 flex items-center justify-center z-50"
-      style={{ background: "rgba(0,0,0,0.6)" }}>
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          style={{ background: "rgba(0,0,0,0.6)" }}
+        >
           <div className="bg-white p-8 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out">
             <h2 className="text-3xl text-black font-bold text-center mb-4">
               🎉 Game Over! 🎉

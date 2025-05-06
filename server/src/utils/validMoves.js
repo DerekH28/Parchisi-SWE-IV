@@ -1,26 +1,49 @@
 import { gameState } from "../utils/gameState.js";
 import { routes } from "../utils/routes.js";
+import { safeSpaces } from "../utils/safeSpaces.js";
 
 /**
- * Checks if the destination tile is free of a blockade.
- * A blockade exists if there are already 2 pieces of the same color on that tile.
+ * Validates if a piece can move to a destination, considering:
+ * - Safe spaces (can't land on opponent's piece unless leaving home)
+ * - Blockades (max 2 pieces of same color per tile)
  *
  * @param {object} coord - The destination coordinate { row, col }.
  * @param {string} player - The player's color.
- * @returns {boolean} - True if the tile is not blocked, false otherwise.
+ * @param {boolean} isLeavingHome - Whether the piece is leaving home.
+ * @returns {boolean} - True if the destination is valid.
  */
-export const isValidDestination = (coord, player) => {
-  const playerPiecesAtCoord = gameState[player].filter(
-    (p) => p.coord.row === coord.row && p.coord.col === coord.col
+export const isValidDestination = (coord, player, isLeavingHome = false) => {
+  const isSafe = safeSpaces.some(
+    (space) => space.row === coord.row && space.col === coord.col
   );
 
-  return playerPiecesAtCoord.length < 2;
+  if (isSafe && !isLeavingHome) {
+    for (const opponent of Object.keys(gameState)) {
+      if (opponent === player) continue;
+      const opponentPieces = gameState[opponent];
+      if (!Array.isArray(opponentPieces)) continue;
+      if (
+        opponentPieces.some(
+          (p) => p.coord.row === coord.row && p.coord.col === coord.col
+        )
+      )
+        return false;
+    }
+  }
+
+  return (
+    gameState[player].filter(
+      (p) => p.coord.row === coord.row && p.coord.col === coord.col
+    ).length < 2
+  );
 };
 
 /**
- * Checks if a piece at home can leave.
- * In addition to the dice condition (a 5 on one die or sum of 5),
- * the home exit tile must not be blocked.
+ * Checks if a piece can leave home.
+ * A piece can leave home if:
+ * - It's in home
+ * - Has a 5 on one die OR sum of both dice equals 5
+ * - Starting tile is not blocked
  *
  * @param {object} piece - The piece object.
  * @param {number[]} dice - The array of dice values.
@@ -29,13 +52,9 @@ export const isValidDestination = (coord, player) => {
  */
 export const canLeaveHome = (piece, dice, player) => {
   if (!piece.inHome) return false;
-  // Check if any die is 5 or if the sum of both dice equals 5.
-  if (!(dice.includes(5) || (dice.length === 2 && dice[0] + dice[1] === 5))) {
+  if (!(dice.includes(5) || (dice.length === 2 && dice[0] + dice[1] === 5)))
     return false;
-  }
-  // The piece can leave home only if the starting tile is not blocked.
-  const startingTile = routes[player].path[0];
-  return isValidDestination(startingTile, player);
+  return isValidDestination(routes[player].path[0], player);
 };
 
 /**
@@ -49,22 +68,16 @@ export const canLeaveHome = (piece, dice, player) => {
  * @returns {boolean} - True if the piece can move and the destination is valid.
  */
 export const canMoveOnBoard = (piece, diceValue, path, player) => {
-  // Determine the current index on the path.
-  let currentIndex = piece.lastKnownIndex;
-  if (currentIndex === undefined) {
-    currentIndex = path.findIndex(
+  let currentIndex =
+    piece.lastKnownIndex ??
+    path.findIndex(
       (tile) => tile.row === piece.coord.row && tile.col === piece.coord.col
     );
-  }
-  // Cannot move if already at or beyond the final tile.
   if (currentIndex < 0 || currentIndex >= path.length - 1) return false;
-
-  // Calculate the intended new index, preventing overshooting.
-  const newIndex = Math.min(currentIndex + diceValue, path.length - 1);
-  const newCoord = path[newIndex];
-
-  // The move is valid only if the destination tile is not blocked.
-  return isValidDestination(newCoord, player);
+  return isValidDestination(
+    path[Math.min(currentIndex + diceValue, path.length - 1)],
+    player
+  );
 };
 
 /**
@@ -81,16 +94,9 @@ export const hasValidMoves = (player, dice) => {
   const pieces = gameState[player];
   const path = routes[player].path;
 
-  // Check each piece for a valid move.
-  for (let piece of pieces) {
-    if (piece.inHome) {
-      if (canLeaveHome(piece, dice, player)) return true;
-    } else {
-      // Loop through each die value to see if a move is possible.
-      for (let diceValue of dice) {
-        if (canMoveOnBoard(piece, diceValue, path, player)) return true;
-      }
-    }
-  }
-  return false;
+  return pieces.some((piece) =>
+    piece.inHome
+      ? canLeaveHome(piece, dice, player)
+      : dice.some((diceValue) => canMoveOnBoard(piece, diceValue, path, player))
+  );
 };

@@ -1,6 +1,5 @@
 import React from "react";
 import { boardLayout } from "../models/boardLayout";
-import { safeSpaces } from "../models/safeSpaces";
 
 /**
  * Defines CSS classes for each board cell type.
@@ -22,25 +21,6 @@ const cellClasses = {
   "dark-yellow-gray": "bg-[#7a6e3f]",
   "dark-green-gray": "bg-[#4e6e50]",
   "dark-blue-gray": "bg-[#4f5f6f]",
-};
-
-/**
- * Player color mapping for pieces.
- */
-const playerColors = {
-  red: "bg-red-500",
-  blue: "bg-blue-500",
-  yellow: "bg-yellow-500",
-  green: "bg-green-500",
-};
-
-/**
- * check if cell is safe spot
- */
-const isSafeSpace = (rowIndex, colIndex) => {
-  return safeSpaces.some(
-    (spot) => spot.row === rowIndex && spot.col === colIndex
-  );
 };
 
 /**

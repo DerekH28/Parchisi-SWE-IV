@@ -1,4 +1,14 @@
-// In your game state file (e.g., gameState.js), ensure the dice state is included:
+/**
+ * Initial game state configuration.
+ * Contains:
+ * - Current turn (redundant with turnManager)
+ * - Dice state (values and played status)
+ * - Player pieces (4 pieces per player, each with position and movement history)
+ *   - inHome: whether piece is in starting area
+ *   - index: piece identifier
+ *   - coord: current position {row, col}
+ *   - traveledTiles: array of previously visited positions
+ */
 export const initialGameState = {
   currentTurn: "red", // this is now redundant if using turnManager.currentTurn
   dice: {
