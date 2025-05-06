@@ -54,20 +54,19 @@ const tutorialSteps = [
   {
     title: "Movement",
     content:
-      "Below is the board when it’s your turn. Highlighted in yellow is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click that highlighted space to move your piece out of home.",
+      "Below is the board when it’s your turn. Highlighted in yellow is the one space you can move to.\n\nBecause you rolled a 5 and a 5, click one of the green use 5 buttons to move your piece out of home.",
     highlights: [{ row: 3, col: 6 }],
   },
   {
     title: "Blockade",
     content:
-      "After moving out of home you have two pieces in one space! That creates a blockade—no piece can pass it. Click the highlighted space to form your blockade.",
-    highlights: [{ row: 3, col: 6 }],
+      "After moving out of home you have two pieces in one space! That creates a blockade—no piece can pass it. Click the other use 5 to form your blockade.",
   },
   {
     title: "Breaking Blockade",
     content:
-      "You rolled a 6! A 6 forces you to break up your blockade and move one piece in the blockade 6 spaces. Click the highlighted space to break it.",
-    highlights: [{ row: 6, col: 2 }],
+      "You rolled a 6! A 6 forces you to break up your blockade and move one piece in the blockade 6 spaces. Click the use 6 button to break it.",
+
   },
 ];
 
