@@ -2,6 +2,7 @@
 import { safeSpaces } from "../utils/safeSpaces.js";
 import { homeCoordinates } from "./homeCoordinates.js";
 import { gameState } from "../utils/gameState.js";
+import { routes } from "../utils/routes.js";
 
 /**
  * Returns the player's home tile based on their color and piece index.
@@ -106,4 +107,21 @@ export const isOpponentOnSafeSpace = (coord, player) => {
   }
 
   return false;
+};
+
+/**
+ * Checks if a player has won the game by getting all pieces to the end
+ */
+export const checkForWin = (player) => {
+  if (!player || !gameState[player]) return false;
+
+  const playerPieces = gameState[player];
+  const path = routes[player]?.path;
+  if (!path) return false;
+
+  // Check if all pieces are at the end of their path
+  return playerPieces.every(piece => {
+    if (piece.inHome) return false;
+    return piece.lastKnownIndex === path.length - 1;
+  });
 };

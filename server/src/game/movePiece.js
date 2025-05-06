@@ -1,5 +1,5 @@
 // src/game/movePiece.js
-import { isBlockadeOnPath, captureOpponentAt, getHomeCoordinate, isOpponentOnSafeSpace } from "./gameLogic.js";
+import { isBlockadeOnPath, captureOpponentAt, getHomeCoordinate, isOpponentOnSafeSpace, checkForWin } from "./gameLogic.js";
 import { gameState } from "../utils/gameState.js";
 
 /**
@@ -52,7 +52,7 @@ export const movePiece = (player, pieceId, diceValue, routes) => {
     const newIndex = Math.min(currentIndex + diceValue, path.length - 1);
     const newCoord = path[newIndex];
 
-    if(isOpponentOnSafeSpace(newCoord, player)){
+    if (isOpponentOnSafeSpace(newCoord, player)) {
         return { success: false, message: "Cannot move to safe space occupied by opponent" };
     }
 
@@ -69,6 +69,11 @@ export const movePiece = (player, pieceId, diceValue, routes) => {
         coord: newCoord,
         lastKnownIndex: newIndex,
     };
+
+    // Check for win condition after successful move
+    if (checkForWin(player)) {
+        return { success: true, hasWon: true };
+    }
 
     return { success: true };
 };

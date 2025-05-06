@@ -9,6 +9,7 @@ import Dice from "./Dice";
 const Game = () => {
   const [notification, setNotification] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
+  const [winner, setWinner] = useState(null);
   const { socket, player, diceValues, currentTurn, positions, setDiceValues } =
     useSocket();
 
@@ -21,6 +22,19 @@ const Game = () => {
       diceValues,
     });
   }, [player, currentTurn, positions, diceValues]);
+
+  // Listen for win events
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("game-won", (winningPlayer) => {
+      setWinner(winningPlayer);
+    });
+
+    return () => {
+      socket.off("game-won");
+    };
+  }, [socket]);
 
   const {
     handleDieSelect,
@@ -142,6 +156,28 @@ const Game = () => {
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-6 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out">
             <p className="text-lg font-semibold">{notification}</p>
+          </div>
+        </div>
+      )}
+
+      {winner && (
+        <div       className="fixed inset-0 flex items-center justify-center z-50"
+      style={{ background: "rgba(0,0,0,0.6)" }}>
+          <div className="bg-white p-8 rounded-lg shadow-xl transform transition-all duration-300 ease-in-out">
+            <h2 className="text-3xl text-black font-bold text-center mb-4">
+              🎉 Game Over! 🎉
+            </h2>
+            <p className="text-xl text-black text-center mb-6">
+              {winner.toUpperCase()} has won the game!
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Exit Game
+              </button>
+            </div>
           </div>
         </div>
       )}
