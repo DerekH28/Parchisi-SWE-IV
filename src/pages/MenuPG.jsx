@@ -43,14 +43,6 @@ const MenuPage = () => {
             >
               Start New Game
             </button>
-
-            <button
-              onClick={() => navigate("/stats")}
-              className="w-full px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition shadow-sm"
-            >
-              My Stats
-            </button>
-
             <button
               onClick={() => navigate("/tutorial")}
               className="w-full px-4 py-3 bg-[#cfede8] text-black rounded-full hover:brightness-95 transition shadow-sm"

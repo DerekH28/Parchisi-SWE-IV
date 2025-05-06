@@ -4,9 +4,11 @@ import useGameLogic from "../hooks/useGameLogic";
 import Board from "./Board";
 import { routes } from "../util/routes";
 import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
+import Dice from "./Dice";
 
 const Game = () => {
   const [notification, setNotification] = useState(null);
+  const [isRolling, setIsRolling] = useState(false);
   const { socket, player, diceValues, currentTurn, positions, setDiceValues } =
     useSocket();
 
@@ -52,12 +54,15 @@ const Game = () => {
       return;
     }
     console.log(`🎲 ${player} rolling dice...`);
+    setIsRolling(true);
     socket.emit("roll-dice", player, (response) => {
       if (!response.success) {
         showNotification(`❌ Dice roll failed: ${response.message}`);
+        setIsRolling(false);
       } else {
         setDiceValues(response.dice);
         resetDiceSelection();
+        setTimeout(() => setIsRolling(false), 1000);
 
         // Check if player has any valid moves
         const hasValidMoves = checkForValidMoves(response.dice);
@@ -192,29 +197,18 @@ const Game = () => {
         Roll Dice
       </button>
       {diceValues.length > 0 && (
-        <div className="mt-2">
-          <p>🎲 Dice Rolled: {diceValues.join(" and ")}</p>
-          <div className="flex gap-2">
+        <div className="mt-2 flex flex-col items-center">
+          <div className="flex gap-4">
             {diceValues.map((die, index) => (
-              <button
+              <Dice
                 key={index}
+                value={die}
+                isSelected={selectedDice.includes(index)}
                 onClick={() => handleDieSelect(index)}
-                className={`px-3 py-1 border rounded ${
-                  selectedDice.includes(index)
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                Use {die}
-              </button>
+                isRolling={isRolling}
+              />
             ))}
           </div>
-          {selectedDice.length > 0 && (
-            <p className="mt-2">
-              ✅ Selected Move:{" "}
-              {selectedDice.reduce((sum, idx) => sum + diceValues[idx], 0)}
-            </p>
-          )}
         </div>
       )}
     </div>

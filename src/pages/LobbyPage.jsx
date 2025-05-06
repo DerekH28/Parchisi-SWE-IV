@@ -97,8 +97,8 @@ const LobbyPage = () => {
         <ParcheesiHeader />
       </div>
       <div className="flex justify-center items-center flex-1 w-full">
-        <div className="relative bg-[#D8F8F3] bg-opacity-90 rounded-none px-10 py-12 shadow-xl w-full max-w-md text-center border-2 border-[#42aaca]">
-          <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-[#d8f8f3] px-8 py-2 min-w-[300px] rounded-none border-2 border-[#42aaca] shadow text-xl font-bold text-gray-800">
+        <div className="relative bg-[#D8F8F3] bg-opacity-90 rounded-xl px-10 py-12 shadow-xl w-full max-w-md text-center border-2 border-[#42aaca]">
+          <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 bg-[#d8f8f3] px-8 py-2 min-w-[300px] rounded-xl border-2 border-[#42aaca] shadow text-xl font-bold text-gray-800">
             {lobbyCode ? "Lobby" : "Create or Join a Lobby"}
           </div>
           {error && (

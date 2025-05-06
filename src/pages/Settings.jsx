@@ -62,9 +62,9 @@ const Settings = () => {
 
           <button
             onClick={() => navigate("/menu")}
-            className="mt-6 px-4 py-2 bg-white border border-gray-400 rounded shadow"
+            className="mt-6 px-4 py-2 bg-gray-200 rounded-full shadow"
           >
-            EXIT
+            Exit
           </button>
         </div>
       </div>
