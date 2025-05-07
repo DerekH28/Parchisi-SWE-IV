@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 import socket from "../socket";
 import backgroundImage from "../assets/parcheesi_background.jpg";
 import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
@@ -24,7 +25,7 @@ const LobbyPage = () => {
         }
       }
     };
-    const handleGameStarted = ({ yourColor }) => {
+    const handleGameStarted = ({ gameState, yourColor }) => {
       if (yourColor) {
         socket.emit("request-player-assignment", yourColor);
         navigate("/game");

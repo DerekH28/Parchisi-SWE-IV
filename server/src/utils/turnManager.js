@@ -15,9 +15,10 @@ export let activePlayers = [];
  * @param {string[]} players - Array of player colors that are in the game
  */
 export const setActivePlayers = (players) => {
-  activePlayers = players
-    .filter((player) => turnOrder.includes(player))
-    .sort((a, b) => turnOrder.indexOf(a) - turnOrder.indexOf(b));
+  activePlayers = players.filter((player) => turnOrder.includes(player));
+  // Sort active players according to the turn order
+  activePlayers.sort((a, b) => turnOrder.indexOf(a) - turnOrder.indexOf(b));
+  console.log("🔹 Active players set:", activePlayers);
 };
 
 /**
@@ -29,15 +30,19 @@ export const setActivePlayers = (players) => {
  */
 export const getNextTurn = (io, current) => {
   if (!activePlayers.length) {
+    console.warn("⚠️ No active players set for turn management");
     return current;
   }
 
   const currentIndex = activePlayers.indexOf(current);
   if (currentIndex === -1) {
+    console.warn(`⚠️ Current player ${current} not found in active players`);
     currentTurn = activePlayers[0];
     return currentTurn;
   }
 
-  currentTurn = activePlayers[(currentIndex + 1) % activePlayers.length];
+  const nextIndex = (currentIndex + 1) % activePlayers.length;
+  currentTurn = activePlayers[nextIndex];
+  console.log(`🔹 Turn changed from ${current} to ${currentTurn}`);
   return currentTurn;
 };

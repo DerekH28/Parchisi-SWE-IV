@@ -6,16 +6,6 @@ import { routes } from "../util/routes";
 import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 import Dice from "./Dice";
 
-/**
- * Main game component that manages the game state and user interactions
- * Handles:
- * - Player turns and dice rolling
- * - Piece movement
- * - Win condition checking
- * - Game notifications
- *
- * @returns {JSX.Element} The game interface with board, dice, and controls
- */
 const Game = () => {
   const [notification, setNotification] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
@@ -59,7 +49,6 @@ const Game = () => {
 
   /**
    * Shows a notification message that automatically disappears after 3 seconds
-   * @param {string} message - The notification message to display
    */
   const showNotification = (message) => {
     setNotification(message);
@@ -67,8 +56,7 @@ const Game = () => {
   };
 
   /**
-   * Handles rolling dice, ensuring only the current player can roll
-   * Checks for valid moves after rolling
+   * Handles rolling dice, ensuring only the current player can roll.
    */
   const rollDice = () => {
     if (!player) {
@@ -101,13 +89,6 @@ const Game = () => {
 
   /**
    * Checks if the player has any valid moves with the current dice roll
-   * Validates:
-   * - Leaving home (requires a 5)
-   * - Moving pieces on the board
-   * - Using individual dice or sum of dice
-   *
-   * @param {number[]} dice - Array of dice values
-   * @returns {boolean} Whether the player has any valid moves
    */
   const checkForValidMoves = (dice) => {
     if (!player || !positions[player]) return false;
