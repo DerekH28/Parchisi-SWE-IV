@@ -135,9 +135,9 @@ export default function TutorialPage() {
           {step === 5 && (
             <button
               onClick={onContinue}
-              className="mt-6 px-6 py-3 bg-yellow-400 text-black rounded-lg shadow hover:brightness-95"
+              className="mt-6 px-6 py-3 bg-teal-300 text-black rounded-lg shadow hover:brightness-95"
             >
-              Continue
+              Roll Dice
             </button>
           )}
 
