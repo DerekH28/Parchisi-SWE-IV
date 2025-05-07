@@ -11,7 +11,7 @@ const initialPiecePositions = {
     { coord: { row: 2, col: 3 } },
     { coord: { row: 3, col: 3 } },
     { coord: { row: 3, col: 2 } },
-    { coord: { row: 2, col: 2 } }, // index 3 moves first, then index 2 forms blockade
+    { coord: { row: 2, col: 2 } },
   ],
   blue: [
     { coord: { row: 2, col: 11 } },
@@ -116,7 +116,9 @@ export default function TutorialPage() {
           {/* Use 5 buttons on step 4 */}
           {step === 4 && (
             <div className="mt-4 flex flex-col items-center space-y-2">
-              <p className="text-lg">🎲 You rolled: {diceValues.join(" and ")}</p>
+              <p className="text-lg">
+                🎲 You rolled: {diceValues.join(" and ")}
+              </p>
               <div className="flex gap-4">
                 {diceValues.map((die, idx) => (
                   <button
@@ -144,7 +146,9 @@ export default function TutorialPage() {
           {/* Use 6/4 buttons on step 6 */}
           {step === 6 && (
             <div className="mt-4 flex flex-col items-center space-y-2">
-              <p className="text-lg">🎲 You rolled: {diceValues.join(" and ")}</p>
+              <p className="text-lg">
+                🎲 You rolled: {diceValues.join(" and ")}
+              </p>
               <div className="flex gap-4">
                 {diceValues.map((die, idx) => (
                   <button
@@ -175,6 +179,3 @@ export default function TutorialPage() {
     </div>
   );
 }
-
-
-

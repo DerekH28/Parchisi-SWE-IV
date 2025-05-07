@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthProvider";
 import socket from "../socket";
 import backgroundImage from "../assets/parcheesi_background.jpg";
 import ParcheesiHeader from "../components/ParcheesiHeader.jsx";
 
 const LobbyPage = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [inputCode, setInputCode] = useState("");
   const [lobbyCode, setLobbyCode] = useState("");

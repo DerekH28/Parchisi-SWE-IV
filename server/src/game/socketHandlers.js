@@ -165,7 +165,7 @@ export const handleGameEvents = (io) => {
               yourColor: player.color,
             });
             console.log(
-              `�� Sent game start to ${player.color} player (${player.id})`
+              `🔹 Sent game start to ${player.color} player (${player.id})`
             );
           }
         });
@@ -243,6 +243,16 @@ export const handleGameEvents = (io) => {
       }
 
       io.emit("game-state-updated", JSON.parse(JSON.stringify(gameState)));
+
+      // Check if the player has won
+      if (moveResult.hasWon) {
+        io.emit("game-won", player);
+        return callback({
+          success: true,
+          newPositions: gameState,
+          hasWon: true,
+        });
+      }
 
       if (gameState.dice.die1.played && gameState.dice.die2.played) {
         const nextTurn = getNextTurn(io, currentTurn);

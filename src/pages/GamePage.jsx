@@ -6,8 +6,6 @@ import Game from "../components/Game";
 import backgroundImage from "../assets/parcheesi_background.jpg";
 import TutorialModal from "../components/TutorialModal";
 
-//TODO: Create win state
-
 /**
  * Renders the Game page.
  */
@@ -15,8 +13,6 @@ const GamePage = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const [showTutorial, setShowTutorial] = useState(false);
-  const [tutorialStep, setTutorialStep] = useState(0);
-  const [highlightedCells, setHighlightedCells] = useState([]);
 
   useEffect(() => {
     if (!user) {
@@ -57,9 +53,7 @@ const GamePage = () => {
         Tutorial
       </button>
       {/* Tutorial Modal */}
-      {showTutorial && (
-        <TutorialModal onClose={() => setShowTutorial(false)} />
-      )}
+      {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
     </div>
   );
 };
