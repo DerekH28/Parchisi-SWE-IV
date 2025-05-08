@@ -83,7 +83,7 @@ npm run lint
 
 
 ##  Screenshots
-![Game board screenshot]("./src/assets/Screenshot 2025-05-08 000409.png")
+![Game board screenshot](./src/assets/Screenshot_2025-05-08_000409.png)
 
 
 ###  Main Menu
