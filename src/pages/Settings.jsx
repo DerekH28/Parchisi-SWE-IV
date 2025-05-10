@@ -15,7 +15,7 @@ const Settings = () => {
     setColorBlindMode(mode);
     alert(`Color blindness mode selected: ${mode}`);
   };
-
+  
   const options = [
     { label: "None (Default Colors)", value: "None" },
     { label: "Protanopia (Red-Weak)", value: "Protanopia" },
