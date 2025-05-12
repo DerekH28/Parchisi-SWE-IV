@@ -11,6 +11,14 @@ export let currentTurn = turnOrder[0];
 export let activePlayers = [];
 
 /**
+ * Resets the current turn to the first player.
+ * Used primarily for testing.
+ */
+export const resetTurn = () => {
+  currentTurn = turnOrder[0];
+};
+
+/**
  * Sets the active players for the game.
  * @param {string[]} players - Array of player colors that are in the game
  */

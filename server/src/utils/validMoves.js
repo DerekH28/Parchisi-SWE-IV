@@ -73,11 +73,11 @@ export const canMoveOnBoard = (piece, diceValue, path, player) => {
     path.findIndex(
       (tile) => tile.row === piece.coord.row && tile.col === piece.coord.col
     );
-  if (currentIndex < 0 || currentIndex >= path.length - 1) return false;
-  return isValidDestination(
-    path[Math.min(currentIndex + diceValue, path.length - 1)],
-    player
-  );
+  if (currentIndex < 0 || currentIndex >= path.length) return false;
+  const nextIndex = currentIndex + diceValue;
+  if (nextIndex >= path.length) return false;
+  if (!path[nextIndex]) return false;
+  return isValidDestination(path[nextIndex], player);
 };
 
 /**
@@ -94,9 +94,19 @@ export const hasValidMoves = (player, dice) => {
   const pieces = gameState[player];
   const path = routes[player].path;
 
-  return pieces.some((piece) =>
-    piece.inHome
-      ? canLeaveHome(piece, dice, player)
-      : dice.some((diceValue) => canMoveOnBoard(piece, diceValue, path, player))
-  );
+  return pieces.some((piece) => {
+    if (piece.inHome) {
+      return canLeaveHome(piece, dice, player);
+    }
+    // Check if piece is at the end of the path
+    const currentIndex =
+      piece.lastKnownIndex ??
+      path.findIndex(
+        (tile) => tile.row === piece.coord.row && tile.col === piece.coord.col
+      );
+    if (currentIndex >= path.length - 1) return false;
+    return dice.some((diceValue) =>
+      canMoveOnBoard(piece, diceValue, path, player)
+    );
+  });
 };

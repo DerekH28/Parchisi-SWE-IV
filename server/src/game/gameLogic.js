@@ -142,6 +142,6 @@ export const checkForWin = (player) => {
 
   return playerPieces.every((piece) => {
     if (piece.inHome) return false;
-    return piece.lastKnownIndex === path.length - 1;
+    return piece.lastKnownIndex === 51; // Last valid index in path
   });
 };

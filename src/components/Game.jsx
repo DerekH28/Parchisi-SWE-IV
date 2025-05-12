@@ -226,14 +226,14 @@ const Game = () => {
         currentPlayer={player}
       />
 
-      <button
-        onClick={rollDice}
-        className={`px-4 py-2 mt-2 text-black font-bold rounded ${
-          player === currentTurn ? "bg-[#A3DEE7]" : "bg-gray-500"
-        }`}
-      >
-        Roll Dice
-      </button>
+      {player === currentTurn && diceValues.length === 0 && (
+        <button
+          onClick={rollDice}
+          className="px-4 py-2 mt-2 text-black font-bold rounded bg-[#A3DEE7]"
+        >
+          Roll Dice
+        </button>
+      )}
       {diceValues.length > 0 && (
         <div className="mt-2 flex flex-col items-center">
           <div className="flex gap-4">
